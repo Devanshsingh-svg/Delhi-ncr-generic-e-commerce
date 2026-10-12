@@ -1,5 +1,5 @@
 import { InsufficientStockError, ReservationLockTimeoutError } from '../errors';
-import { InventoryReservationPort, InventoryBatchRecord, StockReservationCreateInput } from './ports/inventory-reservation.port';
+import { InventoryReservationPort, InventoryBatchRecord, StockReservationCreateInput } from '../ports/inventory-reservation.port';
 
 // R8-3: Rewrite lock key cleanly using 64-bit integer from string hash
 function advisoryLockKey(darkStoreId: string, formulationId: string): bigint {

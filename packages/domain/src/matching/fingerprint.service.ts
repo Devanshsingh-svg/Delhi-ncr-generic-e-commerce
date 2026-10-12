@@ -1,7 +1,7 @@
 import { createHash } from 'crypto';
 import { CanonicalFormulation } from '@gq/contracts';
 import { FormulationFingerprintCollisionError } from '../errors';
-import { FormulationPersistencePort, FormulationCreateInput } from './ports/formulation-persistence.port';
+import { FormulationPersistencePort, FormulationCreateInput } from '../ports/formulation-persistence.port';
 
 export class FormulationFingerprintService { private static readonly SCHEMA_VERSION = 1;
   static compute(ingredients: CanonicalFormulation['ingredients'], dosageForm: string, route: string, releaseType: string | null): { canonicalJson: string; fingerprint: Buffer } {
@@ -15,9 +15,9 @@ export class FormulationFingerprintService { private static readonly SCHEMA_VERS
     const molecules = await port.findMoleculesByIds(data.ingredients.map(i => i.ingredientId));
     const innById = new Map(molecules.map(m => [m.id, m.innNormalized]));
     const canonicalIngredients = data.ingredients.map((ing) => ({ ingredientInn: innById.get(ing.ingredientId)!, strengthValue: ing.strengthValue.toString(), strengthUnit: ing.strengthUnit, concentrationDenominator: ing.concentrationDenominator }));
-    const { canonicalJson, fingerprint } = this.compute(canonicalIngredients, data.dosageForm, data.route, data.releaseType);
+    const { canonicalJson, fingerprint } = this.compute(canonicalIngredients as CanonicalFormulation['ingredients'], data.dosageForm, data.route, data.releaseType);
     const existing = await port.findFormulationByFingerprint(fingerprint);
     if (existing) throw new FormulationFingerprintCollisionError(`Formulation with identical fingerprint exists: ${existing.id}`, existing.id);
-    return port.createFormulationWithIngredients({ ...data, ingredients: canonicalIngredients.map((ci, idx) => ({ ingredientId: data.ingredients[idx].ingredientId, strengthValue: data.ingredients[idx].strengthValue, strengthUnit: data.ingredients[idx].strengthUnit, concentrationDenominator: data.ingredients[idx].concentrationDenominator })) });
+    return port.createFormulationWithIngredients({ ...data, ingredients: canonicalIngredients.map((ci, idx) => ({ ingredientId: data.ingredients[idx]?.ingredientId ?? '', strengthValue: data.ingredients[idx]?.strengthValue ?? 0, strengthUnit: data.ingredients[idx]?.strengthUnit ?? '', concentrationDenominator: data.ingredients[idx]?.concentrationDenominator ?? null })) });
   }
 }

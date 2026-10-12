@@ -20,6 +20,10 @@ const BooleanFromEnv = emptyToUndefined.pipe(
 const NumberFromEnv = emptyToUndefined.pipe(z.coerce.number());
 const IntFromEnv = emptyToUndefined.pipe(z.coerce.number().int());
 
+// Positive variants - apply .positive() before piping
+const PositiveNumberFromEnv = emptyToUndefined.pipe(z.coerce.number().positive());
+const PositiveIntFromEnv = emptyToUndefined.pipe(z.coerce.number().int().positive());
+
 const EnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'staging', 'production']).default('development'),
   APP_NAME: z.string().default('genericquick-ncr'),
@@ -28,14 +32,14 @@ const EnvSchema = z.object({
   LOG_PRETTY: BooleanFromEnv.default(true),
 
   DATABASE_URL: z.string().url(),
-  DATABASE_POOL_SIZE: IntFromEnv.positive().default(20),
+  DATABASE_POOL_SIZE: PositiveIntFromEnv.default(20),
   DATABASE_SSL: BooleanFromEnv.default(false),
   DATABASE_MIGRATION_TABLE: z.string().default('_prisma_migrations'),
 
   REDIS_URL: z.string().url(),
   REDIS_TLS: BooleanFromEnv.default(false),
-  REDIS_MAX_RETRIES: IntFromEnv.positive().default(3),
-  REDIS_RETRY_DELAY_MS: IntFromEnv.positive().default(100),
+  REDIS_MAX_RETRIES: PositiveIntFromEnv.default(3),
+  REDIS_RETRY_DELAY_MS: PositiveIntFromEnv.default(100),
 
   MEILISEARCH_URL: z.string().url(),
   MEILISEARCH_API_KEY: z.string().min(1),
@@ -55,6 +59,9 @@ const EnvSchema = z.object({
   JWT_ISSUER: z.string().default('genericquick-ncr'),
   JWT_AUDIENCE: z.string().default('genericquick-ncr-api'),
   SESSION_SECRET: z.string().min(32),
+  SESSION_COOKIE_NAME: z.string().default('gq_session'),
+  SESSION_COOKIE_SECURE: BooleanFromEnv.default(false),
+  SESSION_COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).default('lax'),
 
   OCR_PROVIDER: z.enum(['google-vision', 'aws-textract', 'azure-form-recognizer', 'not-configured']).default('not-configured'),
   GOOGLE_VISION_API_KEY: z.string().optional(),
@@ -111,14 +118,14 @@ const EnvSchema = z.object({
   FEATURE_NTI_BLOCK: BooleanFromEnv.default(true),
   FEATURE_DEMAND_FORECASTING: BooleanFromEnv.default(false),
 
-  DEFAULT_DELIVERY_RADIUS_KM: NumberFromEnv.positive().default(5),
-  DEFAULT_MIN_SHELF_LIFE_DAYS: IntFromEnv.positive().default(180),
-  DEFAULT_PICKING_SLA_MINUTES: IntFromEnv.positive().default(2),
-  DEFAULT_PHARMACIST_REVIEW_SLA_SECONDS: IntFromEnv.positive().default(60),
-  DEFAULT_ORDER_EXPIRY_MINUTES: IntFromEnv.positive().default(15),
-  DEFAULT_RESERVATION_EXPIRY_MINUTES: IntFromEnv.positive().default(30),
-  MAX_CART_ITEMS: IntFromEnv.positive().default(50),
-  MAX_ORDER_ITEMS: IntFromEnv.positive().default(100),
+  DEFAULT_DELIVERY_RADIUS_KM: PositiveNumberFromEnv.default(5),
+  DEFAULT_MIN_SHELF_LIFE_DAYS: PositiveIntFromEnv.default(180),
+  DEFAULT_PICKING_SLA_MINUTES: PositiveIntFromEnv.default(2),
+  DEFAULT_PHARMACIST_REVIEW_SLA_SECONDS: PositiveIntFromEnv.default(60),
+  DEFAULT_ORDER_EXPIRY_MINUTES: PositiveIntFromEnv.default(15),
+  DEFAULT_RESERVATION_EXPIRY_MINUTES: PositiveIntFromEnv.default(30),
+  MAX_CART_ITEMS: PositiveIntFromEnv.default(50),
+  MAX_ORDER_ITEMS: PositiveIntFromEnv.default(100),
 });
 
 export type Env = z.infer<typeof EnvSchema>;
@@ -142,8 +149,8 @@ export function resetEnvCache(): void { cachedEnv = null; }
 export function parseTtlToSeconds(ttl: string): number {
   const match = ttl.match(/^(\d+)([smhd])$/);
   if (!match) return 900;
-  const value = parseInt(match[1], 10);
-  const unit = match[2];
+  const value = parseInt(match[1] ?? '15', 10);
+  const unit = match[2] ?? 'm';
   const multipliers: Record<string, number> = { s: 1, m: 60, h: 3600, d: 86400 };
-  return value * (multipliers[unit] ?? 1);
+  return value * (multipliers[unit] ?? 60);
 }
