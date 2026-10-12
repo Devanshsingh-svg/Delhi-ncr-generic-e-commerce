@@ -1,0 +1,1 @@
+import { z } from 'zod'; export const LoginDtoSchema = z.object({ identifier: z.string().min(1).max(255), password: z.string().min(1).max(128), rememberMe: z.boolean().default(false) }); export type LoginDto = z.infer<typeof LoginDtoSchema>;

@@ -1,0 +1,1 @@
+/** @type {import('next').NextConfig} */ const nextConfig = { reactStrictMode: true, transpilePackages: ['@gq/contracts', '@gq/domain', '@gq/config', '@gq/observability'], async rewrites() { return [{ source: '/api/:path*', destination: 'http://localhost:4000/api/v1/:path*' }]; } }; module.exports = nextConfig;

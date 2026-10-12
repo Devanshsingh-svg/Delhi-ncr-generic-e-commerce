@@ -1,0 +1,3 @@
+SEALED per D14/G14.
+Do not parse, count, or derive.
+Owner: final ingestion phase.

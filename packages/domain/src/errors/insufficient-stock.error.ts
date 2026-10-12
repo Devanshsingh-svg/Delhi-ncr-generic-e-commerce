@@ -1,0 +1,2 @@
+import { DomainError } from './domain-error';
+export class InsufficientStockError extends DomainError { constructor(message: string, public readonly context?: { needed: number; available: number; formulationId: string; darkStoreId: string }) { super(message, 'INSUFFICIENT_STOCK', context); } }

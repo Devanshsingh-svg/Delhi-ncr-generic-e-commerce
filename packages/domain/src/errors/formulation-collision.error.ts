@@ -1,0 +1,2 @@
+import { DomainError } from './domain-error';
+export class FormulationFingerprintCollisionError extends DomainError { constructor(message: string, public readonly existingFormulationId: string) { super(message, 'FORMULATION_FINGERPRINT_COLLISION', { existingFormulationId }); } }

@@ -1,0 +1,1 @@
+import { z } from 'zod'; export const RegisterDtoSchema = z.object({ email: z.string().email().max(255), phone: z.string().regex(/^\+91\d{10}$/), password: z.string().min(8).max(128), fullName: z.string().min(1).max(100), dateOfBirth: z.string().date().optional() }); export type RegisterDto = z.infer<typeof RegisterDtoSchema>;

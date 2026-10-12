@@ -1,0 +1,9 @@
+import { Registry, Counter, Histogram, Gauge, collectDefaultMetrics } from 'prom-client';
+export const metricsRegistry = new Registry(); collectDefaultMetrics({ register: metricsRegistry, prefix: 'gq_' });
+export const httpRequestsTotal = new Counter({ name: 'gq_http_requests_total', help: 'Total HTTP requests', labelNames: ['method', 'path', 'status_code'], registers: [metricsRegistry] });
+export const httpRequestDuration = new Histogram({ name: 'gq_http_request_duration_seconds', help: 'HTTP request latency', labelNames: ['method', 'path'], buckets: [0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10], registers: [metricsRegistry] });
+export const dbQueryDuration = new Histogram({ name: 'gq_db_query_duration_seconds', help: 'Database query latency', labelNames: ['operation', 'table'], buckets: [0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1], registers: [metricsRegistry] });
+export const queueJobsTotal = new Counter({ name: 'gq_queue_jobs_total', help: 'Total queue jobs processed', labelNames: ['queue', 'status'], registers: [metricsRegistry] });
+export const queueJobDuration = new Histogram({ name: 'gq_queue_job_duration_seconds', help: 'Queue job processing latency', labelNames: ['queue'], buckets: [0.1, 0.5, 1, 5, 10, 30, 60, 300], registers: [metricsRegistry] });
+export const activeReservations = new Gauge({ name: 'gq_active_reservations', help: 'Current active stock reservations', labelNames: ['dark_store_id'], registers: [metricsRegistry] });
+export const prescriptionReviewBacklog = new Gauge({ name: 'gq_prescription_review_backlog', help: 'Prescriptions awaiting pharmacist review', registers: [metricsRegistry] });

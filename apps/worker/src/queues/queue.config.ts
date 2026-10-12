@@ -1,0 +1,1 @@
+export const QueueConfig = { queues: [ { name: 'ocr-processing' }, { name: 'notifications' }, { name: 'inventory-sync' }, { name: 'analytics-aggregation' } ], defaultJobOptions: { attempts: 3, backoff: { type: 'exponential', delay: 5000 }, removeOnComplete: 100, removeOnFail: 50 } };
