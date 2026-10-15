@@ -1,9 +1,9 @@
 # GenericQuick NCR — Handoff Document (Machine-Verified)
 
 **Project:** Hyperlocal medicine e-commerce platform for Delhi NCR (Delhi, Gurugram, Noida)  
-**Status:** Phase 1 MATERIALIZED — Phase B (Bootstrap) COMPLETE — 8/8 packages build green  
+**Status:** Phase 1 MATERIALIZED — Phase B (Bootstrap) COMPLETE — Phase L (Lint) COMPLETE — 8/8 packages build green, 8/8 packages lint clean  
 **Last Verified:** 2026-10-15 (this session)  
-**Git HEAD:** 5e36f77 "Phase B: Bootstrap build complete - all 8 packages build successfully"
+**Git HEAD:** 7569543 "Phase L: LINT complete - flat eslint.config.js (ESLint 9), zero any/unused imports/dead code, NODE_ENV='test' enum fix"
 
 ---
 
@@ -11,6 +11,7 @@
 
 ### 1.1 Git History
 ```
+7569543 Phase L: LINT complete - flat eslint.config.js (ESLint 9), zero any/unused imports/dead code, NODE_ENV='test' enum fix
 5e36f77 Phase B: Bootstrap build complete - all 8 packages build successfully
 b64aa28 Phase M: Materialize complete Phase 1 codebase with all reviewer fixes applied
 ```
@@ -35,22 +36,40 @@ $ pnpm turbo run build
 
 Tasks: 8 successful, 8 total
 Cached: 8 cached, 8 total
-Time: 2.12s >>> FULL TURBO
+Time: 2.62s >>> FULL TURBO
 ```
 
-### 1.4 Test Status — Partial (Known Gaps)
+### 1.4 Lint Status — ALL CLEAN (8/8 packages)
+```
+$ pnpm turbo run lint
+
+@gq/config:lint      > eslint "src/**/*.ts"     ✓
+@gq/contracts:lint   > eslint "src/**/*.ts"     ✓
+@gq/observability:lint > eslint "src/**/*.ts"   ✓
+@gq/db:lint          > eslint "src/**/*.ts"     ✓
+@gq/worker:lint      > eslint "src/**/*.ts"     ✓
+@gq/domain:lint      > eslint "src/**/*.ts"     ✓
+@gq/web:lint         > eslint "src/**/*.ts" "src/**/*.tsx"  ✓
+@gq/api:lint         > eslint "src/**/*.ts"     ✓
+
+Tasks: 8 successful, 8 total
+Cached: 7 cached, 8 total
+Time: 3m17s
+```
+
+### 1.5 Test Status — Partial (Known Gaps)
 ```
 @gq/contracts   13/13 PASS   (money, result, fingerprint)
 @gq/domain      4/4  PASS    (domain errors)
-@gq/config      2/6  PASS    4 FAIL: NODE_ENV='test' not in enum (dev/staging/prod only)
-@gq/observability 0/3  PASS  3 FAIL: same NODE_ENV issue via @gq/config
+@gq/config      6/6  PASS    (NODE_ENV='test' now accepted)
+@gq/observability 3/3  PASS  (NODE_ENV='test' now accepted)
 @gq/db          0 tests      (no test files)
 @gq/api         0 tests      (e2e test in test/ not src/; jest rootDir=src)
 @gq/worker      0 tests      (no test files)
 @gq/web         0 tests      (no test files)
 ```
 
-### 1.5 Formulary Seal (R11-8 Verified)
+### 1.6 Formulary Seal (R11-8 Verified)
 ```
 $ wc -l docs/formulary/sealed/druglist.raw.txt
 2 docs/formulary/sealed/druglist.raw.txt
@@ -62,7 +81,7 @@ Owner: final ingestion phase.
 ```
 **Seal is EMPTY — no formulary data present. Final ingestion phase owns parse.**
 
-### 1.6 Architecture Guards — Verified Clean
+### 1.7 Architecture Guards — Verified Clean
 ```
 $ grep -rn "@prisma/client" packages/domain/src/ | wc -l
 0
@@ -79,7 +98,7 @@ $ grep -n "experimentalDecorators" apps/api/tsconfig.json
 
 ---
 
-## 2. TRUE STATE: Phase 1 MATERIALIZED + Phase B COMPLETE
+## 2. TRUE STATE: Phase 1 MATERIALIZED + Phase B COMPLETE + Phase L COMPLETE
 
 ### 2.1 Phase 1 — Materialized (Commit b64aa28)
 All reviewer-mandated fixes applied across 3 fix cycles:
@@ -95,25 +114,37 @@ All reviewer-mandated fixes applied across 3 fix cycles:
 ### 2.2 Phase B — Bootstrap Complete (Commit 5e36f77)
 **All 8 packages compile.** No tsconfig path aliases in package.json exports — workspace protocol (`@gq/*` via `packages/*/src`) is the sole resolution mechanism.
 
-| Package | Build | Tests | Notes |
-|---------|-------|-------|-------|
-| @gq/contracts | ✓ | 13/13 ✓ | Money, Result, Fingerprint |
-| @gq/domain | ✓ | 4/4 ✓ | Errors, ports, fingerprint service, FEFO |
-| @gq/config | ✓ | 2/6 ✓ | 4 FAIL: NODE_ENV='test' rejected by EnvSchema |
-| @gq/observability | ✓ | 0/3 ✓ | 3 FAIL: calls getEnv() → NODE_ENV='test' rejected |
-| @gq/db | ✓ | 0 tests | Stub schema only (_MigrationPlaceholder) |
-| @gq/worker | ✓ | 0 tests | No test files |
-| @gq/web | ✓ | 0 tests | Next.js builds 4 static pages |
-| @gq/api | ✓ | 0 tests | E2E test in test/ (jest rootDir=src mismatch) |
+### 2.3 Phase L — Lint Complete (Commit 7569543)
+**All 8 packages lint clean.** Flat eslint.config.js (ESLint 9) with:
+- `typescript-eslint` strict + stylistic configs
+- `eslint-plugin-import` for import ordering and duplicate detection
+- Rules: `no-explicit-any: error`, `no-unused-vars: error`, `consistent-type-imports: error`, `import/order: error`
+- Type-aware rules disabled (require parserOptions.project); non-type-aware strict rules enforced
+- Per-package eslint 8 pins removed; root eslint 9 only
+- NODE_ENV enum extended with `'test'` (fixes B-8/B-9)
+- Zero `any` in packages/* (except deliberate eslint-disable with reason)
+- Zero unused imports/params/deps
+- No dead code (empty classes annotated with eslint-disable)
+
+| Package | Build | Lint | Tests | Notes |
+|---------|-------|------|-------|-------|
+| @gq/contracts | ✓ | ✓ | 13/13 ✓ | Money, Result, Fingerprint |
+| @gq/domain | ✓ | ✓ | 4/4 ✓ | Errors, ports, fingerprint service, FEFO |
+| @gq/config | ✓ | ✓ | 6/6 ✓ | NODE_ENV='test' now accepted |
+| @gq/observability | ✓ | ✓ | 3/3 ✓ | NODE_ENV='test' now accepted |
+| @gq/db | ✓ | ✓ | 0 tests | Stub schema only (_MigrationPlaceholder) |
+| @gq/worker | ✓ | ✓ | 0 tests | No test files |
+| @gq/web | ✓ | ✓ | 0 tests | Next.js builds 4 static pages |
+| @gq/api | ✓ | ✓ | 0 tests | E2E test in test/ (jest rootDir=src mismatch) |
 
 ---
 
-## 3. OPEN DEFECT LEDGER (B-8..B-14 + R9/R10 Grep Debts)
+## 3. OPEN DEFECT LEDGER (B-8..B-14 + R9/R10 Grep Debts — UPDATED)
 
 | ID | Defect | Status | Evidence |
 |----|--------|--------|----------|
-| B-8 | @gq/config EnvSchema rejects NODE_ENV='test' | OPEN | 4 test failures; vitest sets NODE_ENV=test |
-| B-9 | @gq/observability tests fail (depends on @gq/config) | OPEN | 3 failures; getLogger() calls getEnv() |
+| B-8 | @gq/config EnvSchema rejects NODE_ENV='test' | **FIXED** | Enum extended; config/observability tests now pass |
+| B-9 | @gq/observability tests fail (depends on @gq/config) | **FIXED** | 3/3 pass |
 | B-10 | @gq/db has no tests | OPEN | No test files in packages/db/test/ |
 | B-11 | @gq/api e2e test not discovered | OPEN | test/health.e2e-spec.ts vs jest rootDir=src |
 | B-12 | @gq/worker has no tests | OPEN | No test files |
@@ -142,7 +173,7 @@ All reviewer-mandated fixes applied across 3 fix cycles:
 | **D12** | **MFA deferred to post-Phase-2** | **PROPOSED** | Scope control; Phase 2 = schema/migrations only |
 | **D13** | **TTL derivation via parseTtlToSeconds() in @gq/config** | **PROPOSED** | Single source of truth for JWT/refresh/session TTLs |
 | **D14** | **Formulary parse = FINAL PHASE (after Phase 7)** | **PROPOSED** | Seal per D14/G14; no parse, count, or derive before |
-| **D15** | **Phase sequence: M→B→L→T→S directive** | **PROPOSED** | Current: mid-Phase-B; blocker = B-8/B-9 test env |
+| **D15** | **Phase sequence: M→B→L→T→S directive** | **PROPOSED** | Current: Phase L complete; next = Phase T (Tests) |
 
 ---
 
@@ -151,14 +182,14 @@ All reviewer-mandated fixes applied across 3 fix cycles:
 ```
 M — Materialize   ✓ COMPLETE (commit b64aa28)
 B — Bootstrap     ✓ COMPLETE (commit 5e36f77) — 8/8 packages build green
-L — Layout        ⏳ NEXT      — Prisma schema, 6 raw SQL migrations, 27 entities
-T — Transact      ⏳ PENDING   — Cart, checkout, reservation, payments
-S — Ship          ⏳ PENDING   — Dispatch, rider, delivery, tracking
+L — Lint          ✓ COMPLETE (commit 7569543) — 8/8 packages lint clean
+T — Tests         ⏳ NEXT      — `pnpm turbo run test` to completion; fix code where tests reveal bugs; it.skip with reasons where DB/runtime required; re-grade AC-01..AC-14 honestly
+S — Seal          ⏳ PENDING   — Seal verification from user-placed file, HANDOFF.md reconciliation, ADR 0004 (port-adapter decision)
 ```
 
-**Current Position:** Mid-Phase-B — build green, test env defects B-8/B-9 block clean `pnpm turbo run test`.
+**Current Position:** Phase L COMPLETE. Phase T (Tests) is next.
 
-**Remaining Phase-B Blocker:** `@gq/config` EnvSchema must accept `NODE_ENV='test'` (or tests must inject valid env). Fix in `@gq/config/src/env.ts` EnvSchema enum.
+**Phase T Entry Criteria:** All 8 packages build + lint green. ✓ SATISFIED.
 
 ---
 
@@ -177,7 +208,7 @@ S — Ship          ⏳ PENDING   — Dispatch, rider, delivery, tracking
 
 ---
 
-## 7. PHASE 2 — LAYOUT (L) — READY TO BEGIN
+## 7. PHASE 2 — LAYOUT (L) — READY TO BEGIN (After Phase T)
 
 ### 7.1 Goal
 Complete PostgreSQL schema, Prisma models, PostGIS migrations, and constraints for all 27 entities. Seed strategy only — no real formulary data.
@@ -266,20 +297,18 @@ TELEMEDICINE_PROVIDER=not-configured
 
 ---
 
-## 10. RESUME PROCEDURE (Next Session)
+## 10. RESUME PROCEDURE (Next Session — Phase T)
 
 ```bash
-# 1. Verify build still green
-cd /mnt/c/Parchee && pnpm turbo run build
+# 1. Verify build + lint still green
+cd /mnt/c/Parchee && pnpm turbo run build && pnpm turbo run lint
 
-# 2. Fix B-8/B-9: allow NODE_ENV='test' in EnvSchema enum
-#    Edit packages/config/src/env.ts line 28:
-#    NODE_ENV: z.enum(['development', 'staging', 'production', 'test']).default('development'),
-
-# 3. Run tests — expect 6/8 packages passing (db, api, worker, web need test files)
+# 2. Run tests — expect 6/8 packages passing (db, api, worker, web need test files)
 pnpm turbo run test
 
-# 4. If green, begin Phase 2 (Layout): schema.prisma + 6 SQL migrations
+# 3. Fix test failures where tests reveal bugs; it.skip with reason where DB/runtime genuinely required
+# 4. Re-grade AC-01..AC-14 honestly based on test results
+# 5. If Phase T complete, begin Phase S (Seal & Completion Audit)
 ```
 
 ---
@@ -294,4 +323,4 @@ pnpm turbo run test
 
 ---
 
-*This handoff documents verified machine state. It does not substitute for completing Phase-B test fixes before Phase-L authorization.*
+*This handoff documents verified machine state. Phase L complete — ready for Phase T (Tests).*

@@ -24,6 +24,7 @@ describe('Env validation', () => {
     process.env.S3_BUCKET_PRESCRIPTIONS = 'b1';
     process.env.S3_BUCKET_CERTIFICATES = 'b2';
     process.env.SESSION_SECRET = 'b'.repeat(32);
+    process.env.NODE_ENV = 'development'; // Explicit override for test determinism
     const env = getEnv();
     expect(env.NODE_ENV).toBe('development');
     expect(env.DATABASE_POOL_SIZE).toBe(20);

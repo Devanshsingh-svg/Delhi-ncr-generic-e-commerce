@@ -6,6 +6,10 @@ const emptyToUndefined = z.preprocess((val) => {
   return val;
 }, z.unknown()).optional();
 
+const OptionalString = z.string().optional().transform((val) => (val === '' ? undefined : val));
+const OptionalUrl = z.string().url().optional().transform((val) => (val === '' ? undefined : val));
+const OptionalEmail = z.string().email().optional().transform((val) => (val === '' ? undefined : val));
+
 const BooleanFromEnv = emptyToUndefined.pipe(
   z.preprocess((val) => {
     if (typeof val === 'string') {
@@ -61,52 +65,52 @@ const EnvSchema = z.object({
   SESSION_COOKIE_SAME_SITE: z.enum(['lax', 'strict', 'none']).default('lax'),
 
   OCR_PROVIDER: z.enum(['google-vision', 'aws-textract', 'azure-form-recognizer', 'not-configured']).default('not-configured'),
-  GOOGLE_VISION_API_KEY: z.string().optional(),
-  AWS_TEXTRACT_REGION: z.string().optional(),
-  AWS_TEXTRACT_ACCESS_KEY: z.string().optional(),
-  AWS_TEXTRACT_SECRET_KEY: z.string().optional(),
-  AZURE_FORM_RECOGNIZER_ENDPOINT: z.string().url().optional(),
-  AZURE_FORM_RECOGNIZER_KEY: z.string().optional(),
+  GOOGLE_VISION_API_KEY: OptionalString,
+  AWS_TEXTRACT_REGION: OptionalString,
+  AWS_TEXTRACT_ACCESS_KEY: OptionalString,
+  AWS_TEXTRACT_SECRET_KEY: OptionalString,
+  AZURE_FORM_RECOGNIZER_ENDPOINT: OptionalUrl,
+  AZURE_FORM_RECOGNIZER_KEY: OptionalString,
 
   PAYMENT_PROVIDER: z.enum(['razorpay', 'cashfree', 'stripe', 'not-configured']).default('not-configured'),
-  RAZORPAY_KEY_ID: z.string().optional(),
-  RAZORPAY_KEY_SECRET: z.string().optional(),
-  RAZORPAY_WEBHOOK_SECRET: z.string().optional(),
-  CASHFREE_APP_ID: z.string().optional(),
-  CASHFREE_SECRET_KEY: z.string().optional(),
-  CASHFREE_WEBHOOK_SECRET: z.string().optional(),
-  STRIPE_SECRET_KEY: z.string().optional(),
-  STRIPE_WEBHOOK_SECRET: z.string().optional(),
-  UPI_COLLECT_MERCHANT_ID: z.string().optional(),
+  RAZORPAY_KEY_ID: OptionalString,
+  RAZORPAY_KEY_SECRET: OptionalString,
+  RAZORPAY_WEBHOOK_SECRET: OptionalString,
+  CASHFREE_APP_ID: OptionalString,
+  CASHFREE_SECRET_KEY: OptionalString,
+  CASHFREE_WEBHOOK_SECRET: OptionalString,
+  STRIPE_SECRET_KEY: OptionalString,
+  STRIPE_WEBHOOK_SECRET: OptionalString,
+  UPI_COLLECT_MERCHANT_ID: OptionalString,
 
   SMS_PROVIDER: z.enum(['twilio', 'gupshup', 'not-configured']).default('not-configured'),
-  TWILIO_ACCOUNT_SID: z.string().optional(),
-  TWILIO_AUTH_TOKEN: z.string().optional(),
-  TWILIO_FROM_NUMBER: z.string().optional(),
-  GUPSHUP_API_KEY: z.string().optional(),
-  GUPSHUP_SOURCE_NUMBER: z.string().optional(),
+  TWILIO_ACCOUNT_SID: OptionalString,
+  TWILIO_AUTH_TOKEN: OptionalString,
+  TWILIO_FROM_NUMBER: OptionalString,
+  GUPSHUP_API_KEY: OptionalString,
+  GUPSHUP_SOURCE_NUMBER: OptionalString,
   EMAIL_PROVIDER: z.enum(['sendgrid', 'ses', 'not-configured']).default('not-configured'),
-  SENDGRID_API_KEY: z.string().optional(),
-  SENDGRID_FROM_EMAIL: z.string().email().optional(),
-  AWS_SES_REGION: z.string().optional(),
-  AWS_SES_ACCESS_KEY: z.string().optional(),
-  AWS_SES_SECRET_KEY: z.string().optional(),
+  SENDGRID_API_KEY: OptionalString,
+  SENDGRID_FROM_EMAIL: OptionalEmail,
+  AWS_SES_REGION: OptionalString,
+  AWS_SES_ACCESS_KEY: OptionalString,
+  AWS_SES_SECRET_KEY: OptionalString,
   WHATSAPP_PROVIDER: z.enum(['twilio', 'gupshup', 'not-configured']).default('not-configured'),
 
   MAPS_PROVIDER: z.enum(['google-maps', 'mapbox', 'not-configured']).default('not-configured'),
-  GOOGLE_MAPS_API_KEY: z.string().optional(),
-  MAPBOX_ACCESS_TOKEN: z.string().optional(),
+  GOOGLE_MAPS_API_KEY: OptionalString,
+  MAPBOX_ACCESS_TOKEN: OptionalString,
   GEOCODING_PROVIDER: z.enum(['google-maps', 'nominatim', 'not-configured']).default('not-configured'),
 
   TELEMEDICINE_PROVIDER: z.enum(['custom-webrtc', 'practo', 'mfine', 'not-configured']).default('not-configured'),
-  TELEMEDICINE_API_KEY: z.string().optional(),
-  TELEMEDICINE_WEBHOOK_SECRET: z.string().optional(),
+  TELEMEDICINE_API_KEY: OptionalString,
+  TELEMEDICINE_WEBHOOK_SECRET: OptionalString,
 
-  CDSCO_API_URL: z.string().url().optional(),
-  CDSCO_API_KEY: z.string().optional(),
-  PHARMACY_COUNCIL_DELHI_API: z.string().url().optional(),
-  PHARMACY_COUNCIL_HARYANA_API: z.string().url().optional(),
-  PHARMACY_COUNCIL_UP_API: z.string().url().optional(),
+  CDSCO_API_URL: OptionalUrl,
+  CDSCO_API_KEY: OptionalString,
+  PHARMACY_COUNCIL_DELHI_API: OptionalUrl,
+  PHARMACY_COUNCIL_HARYANA_API: OptionalUrl,
+  PHARMACY_COUNCIL_UP_API: OptionalUrl,
 
   FEATURE_PRESCRIPTION_OCR: BooleanFromEnv.default(true),
   FEATURE_TELEMEDICINE: BooleanFromEnv.default(false),
