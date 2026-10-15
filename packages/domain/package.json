@@ -7,5 +7,5 @@
   "exports": { ".": { "import": "./dist/index.js", "require": "./dist/index.js", "types": "./dist/index.d.ts" }, "./ports": { "import": "./dist/ports/index.js", "require": "./dist/ports/index.js", "types": "./dist/ports/index.d.ts" } },
   "scripts": { "build": "tsc", "lint": "eslint \"src/**/*.ts\" --fix", "test": "vitest run", "test:watch": "vitest", "test:ci": "vitest run --reporter=default --reporter=junit" },
   "dependencies": { "decimal.js": "^10.4.0", "@gq/contracts": "workspace:*" },
-  "devDependencies": { "typescript": "5.9.2", "vitest": "^2.0.0", "eslint": "^8.57.0" }
+  "devDependencies": { "typescript": "5.9.2", "vitest": "^2.0.0" }
 }

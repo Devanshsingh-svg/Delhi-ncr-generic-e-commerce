@@ -1,4 +1,5 @@
 import pino, { Logger } from 'pino';
+
 import { getEnv } from '@gq/config';
 
 let loggerInstance: Logger | null = null;

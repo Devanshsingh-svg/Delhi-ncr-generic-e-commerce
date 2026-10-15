@@ -17,15 +17,12 @@ const BooleanFromEnv = emptyToUndefined.pipe(
   }, z.boolean())
 );
 
-const NumberFromEnv = emptyToUndefined.pipe(z.coerce.number());
-const IntFromEnv = emptyToUndefined.pipe(z.coerce.number().int());
-
 // Positive variants - apply .positive() before piping
 const PositiveNumberFromEnv = emptyToUndefined.pipe(z.coerce.number().positive());
 const PositiveIntFromEnv = emptyToUndefined.pipe(z.coerce.number().int().positive());
 
 const EnvSchema = z.object({
-  NODE_ENV: z.enum(['development', 'staging', 'production']).default('development'),
+  NODE_ENV: z.enum(['development', 'staging', 'production', 'test']).default('development'),
   APP_NAME: z.string().default('genericquick-ncr'),
   APP_VERSION: z.string().default('0.1.0'),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('debug'),

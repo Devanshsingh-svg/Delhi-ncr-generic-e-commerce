@@ -1,4 +1,4 @@
-import { UserRepository, UserRecord, UserRecordWithSecrets, CreateUserInput, RefreshTokenRecord } from './user-repository.port';
+import { UserRepository, UserRecord, UserRecordWithSecrets, RefreshTokenRecord } from './user-repository.port';
 
 export class AuthPersistenceNotConfiguredError extends Error { constructor() { super('Auth persistence not configured. UserRepository not implemented. See Phase 2 for Prisma implementation.'); this.name = 'AuthPersistenceNotConfiguredError'; } }
 

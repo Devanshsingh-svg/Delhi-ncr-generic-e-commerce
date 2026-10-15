@@ -1,1 +1,9 @@
-import { Module } from '@nestjs/common'; import { HealthController } from './health.controller'; import { PrismaModule } from '../../prisma/prisma.module'; @Module({ imports: [PrismaModule], controllers: [HealthController] }) export class HealthModule {}
+import { Module } from '@nestjs/common';
+
+import { PrismaModule } from '../../prisma/prisma.module';
+
+import { HealthController } from './health.controller';
+
+@Module({ imports: [PrismaModule], controllers: [HealthController] })
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+export class HealthModule {}

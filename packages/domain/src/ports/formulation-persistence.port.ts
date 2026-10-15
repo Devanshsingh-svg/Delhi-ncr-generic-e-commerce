@@ -1,5 +1,3 @@
-import { CanonicalFormulation } from '@gq/contracts';
-
 export interface FormulationIngredientInput {
   ingredientId: string;
   strengthValue: { toString(): string };
@@ -26,7 +24,7 @@ export interface FormulationRecord {
 }
 
 export abstract class FormulationPersistencePort {
-  abstract findMoleculesByIds(ids: string[]): Promise<Array<{ id: string; innNormalized: string }>>;
+  abstract findMoleculesByIds(ids: string[]): Promise<{ id: string; innNormalized: string }[]>;
   abstract findFormulationByFingerprint(fp: Buffer): Promise<FormulationRecord | null>;
   abstract createFormulationWithIngredients(data: FormulationCreateInput): Promise<FormulationRecord>;
 }

@@ -1,9 +1,11 @@
 import { NestFactory } from '@nestjs/core';
+
+import { getEnv } from '@gq/config';
+import { getLogger, initTracing } from '@gq/observability';
+
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
-import { getLogger, initTracing } from '@gq/observability';
-import { getEnv } from '@gq/config';
 
 async function bootstrap() {
   initTracing();

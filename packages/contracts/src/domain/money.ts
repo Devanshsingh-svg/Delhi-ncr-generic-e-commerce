@@ -1,5 +1,5 @@
-import { z } from 'zod';
 import { Decimal } from 'decimal.js';
+import { z } from 'zod';
 
 export const MoneySchema = z.string().regex(/^\d+(\.\d{1,2})?$/).brand<'Money'>();
 export type Money = z.infer<typeof MoneySchema> & { __brand: 'Money' };

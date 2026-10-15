@@ -1,6 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+
 import { getLogger } from '@gq/observability';
+
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Controller('health')
 export class HealthController {
@@ -10,7 +12,7 @@ export class HealthController {
 
   @Get()
   async check() {
-    const checks: Array<{ name: string; status: 'ok' | 'degraded' | 'down'; latencyMs?: number; details?: Record<string, unknown> }> = [];
+    const checks: { name: string; status: 'ok' | 'degraded' | 'down'; latencyMs?: number; details?: Record<string, unknown> }[] = [];
     const dbStart = Date.now();
     try {
       await this.prisma['$queryRaw']`SELECT 1`;

@@ -1,12 +1,15 @@
-import { Controller, Post, Body, Get, UseGuards, Req, Res, HttpCode, HttpStatus } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { RegisterRequestSchema, LoginRequestSchema, RefreshRequestSchema } from '@gq/contracts';
-import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
-import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
-import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { Controller, Post, Body, Get, UseGuards, Res, HttpCode, HttpStatus } from '@nestjs/common';
+// eslint-disable-next-line import/no-unresolved -- express types from @nestjs/platform-express
 import { Response } from 'express';
-import { getEnv } from '@gq/config';
-import { APP_CONSTANTS } from '@gq/config';
+
+import { getEnv, APP_CONSTANTS } from '@gq/config';
+import { RegisterRequestSchema, LoginRequestSchema, RefreshRequestSchema } from '@gq/contracts';
+
+import { CurrentUser } from '../../common/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 export class AuthController {

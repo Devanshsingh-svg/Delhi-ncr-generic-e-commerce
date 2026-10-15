@@ -23,7 +23,7 @@ export abstract class InventoryReservationPort {
     formulationId: string;
     minExpiry: Date;
   }): Promise<InventoryBatchRecord[]>;
-  abstract reserveBatches(allocations: Array<{ batchId: string; quantity: number }>): Promise<void>;
+  abstract reserveBatches(allocations: { batchId: string; quantity: number }[]): Promise<void>;
   abstract createStockReservations(reservations: StockReservationCreateInput[]): Promise<void>;
   abstract acquireAdvisoryLock(key: bigint): Promise<void>;
 }

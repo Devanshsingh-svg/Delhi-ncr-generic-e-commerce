@@ -1,8 +1,9 @@
-import { Inject, Injectable, UnauthorizedException, ConflictException, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UserRepository, USER_REPOSITORY_TOKEN, UserRecord, UserRecordWithSecrets } from '@gq/domain';
+
 import { getEnv, parseTtlToSeconds } from '@gq/config';
+import { UserRepository, USER_REPOSITORY_TOKEN, UserRecord } from '@gq/domain';
 import { getLogger } from '@gq/observability';
 
 @Injectable()
