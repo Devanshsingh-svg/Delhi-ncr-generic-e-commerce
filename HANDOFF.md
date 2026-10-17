@@ -2,8 +2,8 @@
 
 **Project:** Hyperlocal medicine e-commerce platform for Delhi NCR (Delhi, Gurugram, Noida)  
 **Status:** Phase 1 MATERIALIZED — Phase B (Bootstrap) COMPLETE — Phase L (Lint) COMPLETE — Phase T (Tests) COMPLETE — 8/8 packages build green, 8/8 packages lint clean, 4/4 testable packages pass  
-**Last Verified:** 2026-10-15 (this session)  
-**Git HEAD:** fbb19b1 "Phase T: TESTS complete - 4/4 packages with tests pass (config, contracts, domain, observability); NODE_ENV='test' enum fix; empty string handling; logger test fixed; build+lint green"
+**Last Verified:** 2026-10-17 (this session)
+**Git HEAD:** bb788c6 "Phase S: ADR 0004 - PrismaUserRepository class adapter decision" (on top of fbb19b1 Phase T)
 
 ---
 
@@ -187,8 +187,9 @@ All reviewer-mandated fixes applied across 3 fix cycles:
 | D11 | Formulary SEALED until final ingestion phase | ACCEPTED | D14/G14 directive |
 | **D12** | **MFA deferred to post-Phase-2** | **PROPOSED** | Scope control; Phase 2 = schema/migrations only |
 | **D13** | **TTL derivation via parseTtlToSeconds() in @gq/config** | **PROPOSED** | Single source of truth for JWT/refresh/session TTLs |
-| **D14** | **Formulary parse = FINAL PHASE (after Phase 7)** | **PROPOSED** | Seal per D14/G14; no parse, count, or derive before |
-| **D15** | **Phase sequence: M→B→L→T→S directive** | **PROPOSED** | Current: Phase T complete; next = Phase S (Seal) |
+| **D14** | **Formulary parse = FINAL PHASE (after Phase 7)** | **ACCEPTED** | Seal per D14/G14; no parse, count, or derive before |
+| **D15** | **Phase sequence: M→B→L→T→S directive** | **ACCEPTED** | M→B→L→T→S all complete; Phase S seal done |
+| **D16** | **PrismaUserRepository = class adapter over UserRepository port** | **ACCEPTED** | ADR 0004; @gq/db adds @gq/domain dep; Symbol-token DI preserved |
 
 ---
 
@@ -199,10 +200,10 @@ M — Materialize   ✓ COMPLETE (commit b64aa28)
 B — Bootstrap     ✓ COMPLETE (commit 5e36f77) — 8/8 packages build green
 L — Lint          ✓ COMPLETE (commit 7569543) — 8/8 packages lint clean
 T — Tests         ✓ COMPLETE (commit fbb19b1) — 4/4 testable packages pass
-S — Seal          ⏳ NEXT      — Seal verification from user-placed file, HANDOFF.md reconciliation, ADR 0004 (port-adapter decision)
+S — Seal          ✓ COMPLETE — druglist.raw.txt sealed placeholder (2 lines, D14/G14), HANDOFF.md reconciled, ADR 0004 (port-adapter decision) created
 ```
 
-**Current Position:** Phase T COMPLETE. Phase S (Seal & Completion Audit) is next.
+**Current Position:** Phase S COMPLETE. Phase 2 (Layout) is next — requires Human Reviewer authorization (see §11).
 
 **Phase S Entry Criteria:** All 8 packages build + lint + test green. ✓ SATISFIED (4/4 testable packages pass; 4 packages have no tests by design).
 
@@ -223,7 +224,7 @@ S — Seal          ⏳ NEXT      — Seal verification from user-placed file, H
 
 ---
 
-## 7. PHASE 2 — LAYOUT (L) — READY TO BEGIN (After Phase S)
+## 7. PHASE 2 — LAYOUT (L) — PENDING HUMAN REVIEWER AUTHORIZATION (after Phase S complete)
 
 ### 7.1 Goal
 Complete PostgreSQL schema, Prisma models, PostGIS migrations, and constraints for all 27 entities. Seed strategy only — no real formulary data.
@@ -312,19 +313,22 @@ TELEMEDICINE_PROVIDER=not-configured
 
 ---
 
-## 10. RESUME PROCEDURE (Next Session — Phase S)
+## 10. RESUME PROCEDURE (Next Session — Phase 2 pending reviewer authorization)
+
+Phase S is complete. The next session should:
+1. Confirm build + lint + test still green (optional re-verification).
+2. Await Human Reviewer authorization to begin Phase 2 (Layout).
+3. If authorized, begin Phase 2: schema.prisma (27 entities) + 6 SQL migrations in infra/migrations/.
 
 ```bash
-# 1. Verify build + lint + test still green
-cd /mnt/c/Parchee && pnpm turbo run build && pnpm turbo run lint && pnpm turbo run test
+# Re-verification (optional):
+cd /mnt/c/parchee && pnpm turbo run build && pnpm turbo run lint && pnpm turbo run test
 
-# 2. Phase S: Seal verification
-#    - wc -l docs/formulary/sealed/druglist.raw.txt  (expect several hundred lines, user-placed)
-#    - HANDOFF.md reconciliation (this document)
-#    - ADR 0004: port-adapter decision for PrismaUserRepository
-
-# 3. If Phase S complete, begin Phase 2 (Layout): schema.prisma + 6 SQL migrations
+# Phase 2 begins only after reviewer authorization:
+#   packages/db/schema.prisma  (27 entities)
+#   infra/migrations/0001..0006.sql
 ```
+
 
 ---
 
