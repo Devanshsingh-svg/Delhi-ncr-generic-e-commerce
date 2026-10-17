@@ -147,10 +147,10 @@ All reviewer-mandated fixes applied across 3 fix cycles:
 | @gq/domain | ✓ | ✓ | 22/22 ✓ | Errors, fingerprint service, FEFO, NTI guard, combination matcher, formulary category |
 | @gq/config | ✓ | ✓ | 6/6 ✓ | NODE_ENV='test' accepted; empty string handling |
 | @gq/observability | ✓ | ✓ | 3/3 ✓ | Logger redaction config verified |
-| @gq/db | ✓ | ✓ | 0 tests | Stub schema only (_MigrationPlaceholder) |
-| @gq/worker | ✓ | ✓ | 0 tests | No test files |
-| @gq/web | ✓ | ✓ | 0 tests | Next.js builds 4 static pages |
-| @gq/api | ✓ | ✓ | 0 tests | E2E test in test/ (jest rootDir=src mismatch) |
+| @gq/db | ✓ | ✓ | 7/7 ✓ | PrismaUserRepository tests (mapped records, secrets projection, refresh tokens) |
+| @gq/worker | ✓ | ✓ | 2/2 ✓ | QueueConfig names + defaultJobOptions |
+| @gq/web | ✓ | ✓ | 5/5 ✓ | apiClient baseURL, withCredentials, timeout, interceptors |
+| @gq/api | ✓ | ✓ | 1/1 ✓ | HealthController e2e (moved to src/, .spec.ts extension, default supertest import) |
 
 ---
 
@@ -160,11 +160,11 @@ All reviewer-mandated fixes applied across 3 fix cycles:
 |----|--------|--------|----------|
 | B-8 | @gq/config EnvSchema rejects NODE_ENV='test' | **FIXED** | Enum extended; config/observability tests now pass |
 | B-9 | @gq/observability tests fail (depends on @gq/config) | **FIXED** | 3/3 pass |
-| B-10 | @gq/db has no tests | OPEN | No test files in packages/db/test/ |
-| B-11 | @gq/api e2e test not discovered | OPEN | test/health.e2e-spec.ts vs jest rootDir=src |
-| B-12 | @gq/worker has no tests | OPEN | No test files |
-| B-13 | @gq/web has no tests | OPEN | No test files |
-| B-14 | @gq/api missing zod in deps (used in pipes) | OPEN | apps/api/package.json has zod but not @gq/contracts peer |
+| B-10 | @gq/db has no tests | **FIXED** | packages/db/test/prisma-user-repository.test.ts — 7 tests pass |
+| B-11 | @gq/api e2e test not discovered | **FIXED** | Moved to src/health.e2e-spec.ts, tsconfig include updated, testRegex updated, default supertest import |
+| B-12 | @gq/worker has no tests | **FIXED** | apps/worker/src/test/queue.config.spec.ts — 2 tests pass |
+| B-13 | @gq/web has no tests | **FIXED** | apps/web/test/api-client.test.ts — 5 tests pass |
+| B-14 | @gq/contracts zod not in peerDependencies | **FIXED** | zod moved to peerDependencies in packages/contracts/package.json |
 | R9 | grep debt: `@prisma/client` in domain | CLOSED | Verified 0 occurrences |
 | R10 | grep debt: `z.coerce.boolean` in packages | CLOSED | Verified 0 occurrences |
 
@@ -208,7 +208,7 @@ S — Seal          ✓ COMPLETE (commit 741fadf) — druglist.raw.txt sealed pl
 
 **Current Position:** Phase 3 COMPLETE. Phase 4 is next — requires Human Reviewer authorization.
 
-**Phase 3 Exit Criteria:** All 8 packages build + lint + test green. ✓ SATISFIED (4/4 testable packages pass; 4 packages have no tests by design).
+**Phase 3 Exit Criteria:** All 8 packages build + lint + test green. ✓ SATISFIED (all 8 packages now have passing tests).
 
 ---
 
