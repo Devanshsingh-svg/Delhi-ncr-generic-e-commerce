@@ -1,9 +1,9 @@
 # GenericQuick NCR — Handoff Document (Machine-Verified)
 
 **Project:** Hyperlocal medicine e-commerce platform for Delhi NCR (Delhi, Gurugram, Noida)  
-**Status:** Phase 1 MATERIALIZED — Phase B (Bootstrap) COMPLETE — Phase L (Lint) COMPLETE — Phase T (Tests) COMPLETE — Phase S (Seal) COMPLETE — Phase 2 (Layout) COMPLETE — 8/8 packages build green, 8/8 packages lint clean, 4/4 testable packages pass  
+**Status:** Phase 1 MATERIALIZED — Phase B (Bootstrap) COMPLETE — Phase L (Lint) COMPLETE — Phase T (Tests) COMPLETE — Phase S (Seal) COMPLETE — Phase 2 (Layout) COMPLETE — Phase 3 (Formulary Matching & Safety) COMPLETE — 8/8 packages build green, 8/8 packages lint clean, 4/4 testable packages pass  
 **Last Verified:** 2026-10-17 (this session)  
-**Git HEAD:** e35bc97 "Phase 2: Layout complete - schema.prisma (27 entities), 6 SQL migrations, PrismaUserRepository adapter, auth module wired" (on top of 741fadf Phase S)
+**Git HEAD:** 2c974a6 "Phase 3: Formulary matching & safety domain logic - NTI hard-block, combination atomic matching, formulary category MISMATCH_SUSPECTED, 22 domain tests" (on top of e35bc97 Phase 2)
 
 ---
 
@@ -144,7 +144,7 @@ All reviewer-mandated fixes applied across 3 fix cycles:
 | Package | Build | Lint | Tests | Notes |
 |---------|-------|------|-------|-------|
 | @gq/contracts | ✓ | ✓ | 13/13 ✓ | Money, Result, Fingerprint |
-| @gq/domain | ✓ | ✓ | 4/4 ✓ | Errors, ports, fingerprint service, FEFO |
+| @gq/domain | ✓ | ✓ | 22/22 ✓ | Errors, fingerprint service, FEFO, NTI guard, combination matcher, formulary category |
 | @gq/config | ✓ | ✓ | 6/6 ✓ | NODE_ENV='test' accepted; empty string handling |
 | @gq/observability | ✓ | ✓ | 3/3 ✓ | Logger redaction config verified |
 | @gq/db | ✓ | ✓ | 0 tests | Stub schema only (_MigrationPlaceholder) |
@@ -191,6 +191,7 @@ All reviewer-mandated fixes applied across 3 fix cycles:
 | **D15** | **Phase sequence: M→B→L→T→S directive** | **ACCEPTED** | M→B→L→T→S all complete; Phase S seal done |
 | **D16** | **PrismaUserRepository = class adapter over UserRepository port** | **ACCEPTED** | ADR 0004; @gq/db adds @gq/domain dep; Symbol-token DI preserved |
 | **D17** | **Phase 2 schema = 27 entities + User + RefreshToken** | **ACCEPTED** | 29 models in schema.prisma; User/RefreshToken needed for auth |
+| **D18** | **Formulary safety domain layer in @gq/domain** | **ACCEPTED** | NTI hard-block (A4), combination atomic match (A9), release-type in fingerprint (A10), category MISMATCH_SUSPECTED (A11) |
 
 ---
 
@@ -203,10 +204,11 @@ L — Lint          ✓ COMPLETE (commit 7569543) — 8/8 packages lint clean
 T — Tests         ✓ COMPLETE (commit fbb19b1) — 4/4 testable packages pass
 S — Seal          ✓ COMPLETE (commit 741fadf) — druglist.raw.txt sealed placeholder, ADR 0004 created
 2 — Layout        ✓ COMPLETE (commit e35bc97) — schema.prisma (27 entities), 6 SQL migrations, PrismaUserRepository adapter
+3 — Formulary     ✓ COMPLETE (commit 2c974a6) — NTI hard-block, combination atomic matching, formulary category MISMATCH_SUSPECTED
 
-**Current Position:** Phase 2 COMPLETE. Phase 3 is next — requires Human Reviewer authorization.
+**Current Position:** Phase 3 COMPLETE. Phase 4 is next — requires Human Reviewer authorization.
 
-**Phase 2 Exit Criteria:** All 8 packages build + lint + test green. ✓ SATISFIED (4/4 testable packages pass; 4 packages have no tests by design).
+**Phase 3 Exit Criteria:** All 8 packages build + lint + test green. ✓ SATISFIED (4/4 testable packages pass; 4 packages have no tests by design).
 
 ---
 
@@ -314,12 +316,12 @@ TELEMEDICINE_PROVIDER=not-configured
 
 ---
 
-## 10. RESUME PROCEDURE (Next Session — Phase 3 pending reviewer authorization)
+## 10. RESUME PROCEDURE (Next Session — Phase 4 pending reviewer authorization)
 
-Phase 2 is complete. The next session should:
+Phase 3 is complete. The next session should:
 1. Confirm build + lint + test still green (optional re-verification).
-2. Await Human Reviewer authorization to begin Phase 3.
-3. If authorized, begin Phase 3 per the roadmap.
+2. Await Human Reviewer authorization to begin Phase 4.
+3. If authorized, begin Phase 4 per the roadmap.
 
 ```bash
 # Re-verification (optional):
