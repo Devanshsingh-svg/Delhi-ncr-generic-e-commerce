@@ -1,3 +1,462 @@
-generator client { provider = "prisma-client-js" }
-datasource db { provider = "postgresql"; url = env("DATABASE_URL") }
-model _MigrationPlaceholder { id String @id @default(uuid()) @db.Uuid; createdAt DateTime @default(now()) @db.Timestamptz(6) }
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Auth domain
+model User {
+  id             String   @id @default(uuid()) @db.Uuid
+  email          String   @unique
+  phone          String   @unique
+  passwordHash   String
+  fullName       String
+  dateOfBirth    DateTime? @db.Timestamptz(6)
+  roles          String[] @default(["CUSTOMER"])
+  mfaEnabled     Boolean  @default(false)
+  mfaSecret      String?
+  mfaBackupCodes String[] @default([])
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(6)
+
+  refreshTokens RefreshToken[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  token     String   @unique
+  expiresAt DateTime @db.Timestamptz(6)
+  revoked   Boolean  @default(false)
+  userAgent String?
+  ipAddress String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([token])
+}
+
+/// Catalog domain
+model Molecule {
+  id            String   @id @default(uuid()) @db.Uuid
+  inn           String   @unique
+  isNarrowTherapeuticIndex Boolean @default(false)
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(6)
+
+  ingredients   FormulationIngredient[]
+  formulations  Formulation[]
+}
+
+model Formulation {
+  id              String   @id @default(uuid()) @db.Uuid
+  fingerprint     String   @unique
+  schemaVersion   Int      @default(1)
+  releaseType     String
+  dosageForm      String
+  strength        String
+  route           String
+  createdAt       DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(6)
+
+  ingredients     FormulationIngredient[]
+  brandMedicines  BrandMedicine[]
+  genericMedicines GenericMedicine[]
+}
+
+model FormulationIngredient {
+  id             String @id @default(uuid()) @db.Uuid
+  formulationId  String @db.Uuid
+  moleculeId     String @db.Uuid
+  quantityMg     Decimal @db.Decimal(10, 3)
+  isActive       Boolean @default(true)
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  formulation Formulation @relation(fields: [formulationId], references: [id], onDelete: Cascade)
+  molecule    Molecule    @relation(fields: [moleculeId], references: [id])
+
+  @@index([formulationId])
+  @@index([moleculeId])
+}
+
+model BrandMedicine {
+  id             String @id @default(uuid()) @db.Uuid
+  brandName      String @unique
+  formulationId  String @db.Uuid
+  manufacturerId String @db.Uuid
+  regulatoryScheduleId String @db.Uuid
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(6)
+
+  formulation    Formulation   @relation(fields: [formulationId], references: [id])
+  manufacturer   Manufacturer  @relation(fields: [manufacturerId], references: [id])
+  regulatorySchedule RegulatorySchedule @relation(fields: [regulatoryScheduleId], references: [id])
+
+  @@index([formulationId])
+  @@index([manufacturerId])
+  @@index([regulatoryScheduleId])
+}
+
+model GenericMedicine {
+  id             String @id @default(uuid()) @db.Uuid
+  genericName    String @unique
+  formulationId  String @db.Uuid
+  manufacturerId String @db.Uuid
+  regulatoryScheduleId String @db.Uuid
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(6)
+
+  formulation    Formulation   @relation(fields: [formulationId], references: [id])
+  manufacturer   Manufacturer  @relation(fields: [manufacturerId], references: [id])
+  regulatorySchedule RegulatorySchedule @relation(fields: [regulatoryScheduleId], references: [id])
+
+  @@index([formulationId])
+  @@index([manufacturerId])
+  @@index([regulatoryScheduleId])
+}
+
+model Manufacturer {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @unique
+  licenseNo   String   @unique
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
+
+  brandMedicines   BrandMedicine[]
+  genericMedicines GenericMedicine[]
+}
+
+model RegulatorySchedule {
+  id    String @id @default(uuid()) @db.Uuid
+  code  String @unique
+  label String
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  brandMedicines   BrandMedicine[]
+  genericMedicines GenericMedicine[]
+}
+
+/// Facility domain
+model DarkStore {
+  id                String      @id @default(uuid()) @db.Uuid
+  name              String      @unique
+  licenseNumber     String      @unique
+  addressId         String      @db.Uuid
+  deliveryPolygon   String      @db.Geography
+  isActive          Boolean     @default(true)
+  createdAt         DateTime    @default(now()) @db.Timestamptz(6)
+  updatedAt         DateTime    @updatedAt @db.Timestamptz(6)
+
+  address           Address     @relation(fields: [addressId], references: [id])
+  licenses          DarkStoreLicense[]
+  pharmacistAssignments PharmacistAssignment[]
+  inventoryBatches  InventoryBatch[]
+
+  @@index([addressId])
+}
+
+model DarkStoreLicense {
+  id             String   @id @default(uuid()) @db.Uuid
+  darkStoreId    String   @db.Uuid
+  licenseType    String
+  licenseNumber  String
+  issuedAt       DateTime @db.Timestamptz(6)
+  expiresAt      DateTime @db.Timestamptz(6)
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  darkStore DarkStore @relation(fields: [darkStoreId], references: [id])
+
+  @@index([darkStoreId])
+}
+
+model PharmacistAssignment {
+  id           String   @id @default(uuid()) @db.Uuid
+  darkStoreId  String   @db.Uuid
+  pharmacistId String   @db.Uuid
+  isPrimary    Boolean  @default(false)
+  effectiveFrom DateTime @db.Timestamptz(6)
+  effectiveTo  DateTime? @db.Timestamptz(6)
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+
+  darkStore DarkStore @relation(fields: [darkStoreId], references: [id])
+  pharmacist Rider    @relation(fields: [pharmacistId], references: [id])
+
+  @@index([darkStoreId])
+  @@index([pharmacistId])
+}
+
+/// Inventory domain
+model InventoryBatch {
+  id             String   @id @default(uuid()) @db.Uuid
+  formulationId  String   @db.Uuid
+  darkStoreId    String   @db.Uuid
+  availableQty   Int      @default(0)
+  reservedQty    Int      @default(0)
+  batchNumber    String   @unique
+  expiryDate     DateTime @db.Timestamptz(6)
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(6)
+
+  formulation Formulation @relation(fields: [formulationId], references: [id])
+  darkStore   DarkStore @relation(fields: [darkStoreId], references: [id])
+  reservations StockReservation[]
+
+  @@index([formulationId])
+  @@index([darkStoreId])
+  @@index([batchNumber])
+}
+
+/// Customer domain
+model Customer {
+  id      String   @id @default(uuid()) @db.Uuid
+  email   String   @unique
+  phone   String   @unique
+  fullName String
+  roles   String[] @default(["CUSTOMER"])
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  addresses Address[]
+  orders    Order[]
+  cart      Cart?
+}
+
+model Address {
+  id          String @id @default(uuid()) @db.Uuid
+  customerId  String @db.Uuid
+  street      String
+  city        String
+  state       String
+  postalCode  String
+  geo         String @db.Geography
+  isDefault   Boolean @default(false)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
+
+  customer Customer @relation(fields: [customerId], references: [id])
+
+  @@index([customerId])
+}
+
+/// Prescription domain
+model Prescription {
+  id          String   @id @default(uuid()) @db.Uuid
+  customerId  String   @db.Uuid
+  rxNumber    String   @unique
+  prescriber  String
+  issuedAt    DateTime @db.Timestamptz(6)
+  expiresAt   DateTime @db.Timestamptz(6)
+  status      String   @default("ACTIVE")
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  items     PrescriptionItem[]
+  review    PharmacistReview?
+
+  @@index([customerId])
+}
+
+model PrescriptionItem {
+  id               String @id @default(uuid()) @db.Uuid
+  prescriptionId   String @db.Uuid
+  formulationId    String @db.Uuid
+  quantity         Int
+  createdAt        DateTime @default(now()) @db.Timestamptz(6)
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  formulation  Formulation @relation(fields: [formulationId], references: [id])
+
+  @@index([prescriptionId])
+  @@index([formulationId])
+}
+
+model PharmacistReview {
+  id               String @id @default(uuid()) @db.Uuid
+  prescriptionId   String @db.Uuid @unique
+  pharmacistId     String @db.Uuid
+  reviewDecision   String
+  reviewedAt       DateTime @db.Timestamptz(6)
+  createdAt        DateTime @default(now()) @db.Timestamptz(6)
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id], onDelete: Cascade)
+  pharmacist   Rider @relation(fields: [pharmacistId], references: [id])
+
+  @@index([prescriptionId])
+  @@index([pharmacistId])
+}
+
+model Consultation {
+  id             String @id @default(uuid()) @db.Uuid
+  prescriptionId String @db.Uuid @unique
+  pharmacistId   String @db.Uuid
+  startedAt      DateTime @db.Timestamptz(6)
+  endedAt        DateTime? @db.Timestamptz(6)
+  notes          String?
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+
+  prescription Prescription @relation(fields: [prescriptionId], references: [id])
+  pharmacist   Rider @relation(fields: [pharmacistId], references: [id])
+
+  @@index([prescriptionId])
+  @@index([pharmacistId])
+}
+
+/// Transaction domain
+model Cart {
+  id        String @id @default(uuid()) @db.Uuid
+  customerId String @db.Uuid @unique
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  items     CartItem[]
+
+  @@index([customerId])
+}
+
+model CartItem {
+  id            String @id @default(uuid()) @db.Uuid
+  cartId        String @db.Uuid
+  formulationId String @db.Uuid
+  quantity      Int
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime @updatedAt @db.Timestamptz(6)
+
+  cart       Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  formulation Formulation @relation(fields: [formulationId], references: [id])
+
+  @@index([cartId])
+  @@index([formulationId])
+  @@unique([cartId, formulationId])
+}
+
+model Order {
+  id             String   @id @default(uuid()) @db.Uuid
+  customerId     String   @db.Uuid
+  orderNumber    String   @unique
+  status         String   @default("PENDING")
+  totalAmount    Decimal  @db.Decimal(12, 2)
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(6)
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  items      OrderItem[]
+  payment    Payment?
+  shipment   Shipment?
+
+  @@index([customerId])
+}
+
+model OrderItem {
+  id            String @id @default(uuid()) @db.Uuid
+  orderId       String @db.Uuid
+  formulationId String @db.Uuid
+  quantity      Int
+  unitPrice     Decimal @db.Decimal(10, 2)
+  createdAt     DateTime @default(now()) @db.Timestamptz(6)
+
+  order       Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  formulation Formulation @relation(fields: [formulationId], references: [id])
+
+  @@index([orderId])
+  @@index([formulationId])
+}
+
+model Payment {
+  id          String @id @default(uuid()) @db.Uuid
+  orderId     String @db.Uuid @unique
+  provider    String
+  reference   String
+  amount      Decimal @db.Decimal(12, 2)
+  status      String
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
+
+  order Order @relation(fields: [orderId], references: [id])
+
+  @@index([orderId])
+}
+
+model Shipment {
+  id          String @id @default(uuid()) @db.Uuid
+  orderId     String @db.Uuid @unique
+  riderId     String @db.Uuid
+  status      String
+  trackingNo  String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
+
+  order Order @relation(fields: [orderId], references: [id])
+  rider   Rider @relation(fields: [riderId], references: [id])
+
+  @@index([orderId])
+  @@index([riderId])
+}
+
+model StockReservation {
+  id             String @id @default(uuid()) @db.Uuid
+  inventoryBatchId String @db.Uuid
+  formulationId  String @db.Uuid
+  quantity       Int
+  status         String @default("PENDING")
+  expiresAt      DateTime @db.Timestamptz(6)
+  createdAt      DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt      DateTime @updatedAt @db.Timestamptz(6)
+
+  inventoryBatch InventoryBatch @relation(fields: [inventoryBatchId], references: [id])
+  formulation    Formulation @relation(fields: [formulationId], references: [id])
+
+  @@index([inventoryBatchId])
+  @@index([formulationId])
+}
+
+/// Operations domain
+model Rider {
+  id          String @id @default(uuid()) @db.Uuid
+  email       String @unique
+  phone       String @unique
+  fullName    String
+  isActive    Boolean @default(true)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(6)
+
+  pharmacistAssignments PharmacistAssignment[]
+  consultations  Consultation[]
+  shipments      Shipment[]
+}
+
+model IdempotencyRecord {
+  id        String @id @default(uuid()) @db.Uuid
+  key       String @unique
+  status    String
+  response  String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@index([key])
+}
+
+model AuditEvent {
+  id        String @id @default(uuid()) @db.Uuid
+  entity    String
+  action    String
+  oldValues Json?
+  newValues Json?
+  actorId   String?
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+
+  @@index([entity])
+  @@index([action])
+  @@index([createdAt])
+}

@@ -3,7 +3,8 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
 import { getEnv } from '@gq/config';
-import { NotConfiguredUserRepository, USER_REPOSITORY_TOKEN } from '@gq/domain';
+import { PrismaUserRepository } from '@gq/db';
+import { USER_REPOSITORY_TOKEN } from '@gq/domain';
 
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
@@ -25,7 +26,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     AuthService,
     JwtStrategy,
     JwtRefreshStrategy,
-    { provide: USER_REPOSITORY_TOKEN, useClass: NotConfiguredUserRepository },
+    { provide: USER_REPOSITORY_TOKEN, useClass: PrismaUserRepository },
   ],
   exports: [AuthService, JwtModule, USER_REPOSITORY_TOKEN],
 })

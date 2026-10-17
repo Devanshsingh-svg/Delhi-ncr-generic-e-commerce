@@ -295,6 +295,9 @@ importers:
       '@gq/config':
         specifier: workspace:*
         version: link:../config
+      '@gq/domain':
+        specifier: workspace:*
+        version: link:../domain
       '@gq/observability':
         specifier: workspace:*
         version: link:../observability
