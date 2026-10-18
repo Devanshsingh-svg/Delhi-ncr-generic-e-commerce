@@ -6,6 +6,7 @@ import { getEnv } from '@gq/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
 import { PrescriptionModule } from './modules/prescription/prescription.module';
+import { OrderModule } from './modules/order/order.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -15,6 +16,7 @@ import { PrismaModule } from './prisma/prisma.module';
     AuthModule,
     HealthModule,
     PrescriptionModule,
+    OrderModule,
   ],
 })
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
