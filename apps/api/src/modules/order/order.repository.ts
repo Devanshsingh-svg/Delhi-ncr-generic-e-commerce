@@ -16,7 +16,8 @@ export class PrismaOrderRepository implements OrderPersistencePort {
   }
 
   async create(input: CreateOrderInput): Promise<Order> {
-    const order = await this.prisma.order.create({
+    const db = this.prisma as unknown as { order: any };
+    const order = await db.order.create({
       data: {
         customerId: input.customerId,
         orderNumber: `ORD-${Date.now()}`,
@@ -29,18 +30,21 @@ export class PrismaOrderRepository implements OrderPersistencePort {
   }
 
   async findById(id: string): Promise<Order | null> {
-    const order = await this.prisma.order.findUnique({ where: { id } });
+    const db = this.prisma as unknown as { order: any };
+    const order = await db.order.findUnique({ where: { id } });
     if (!order) return null;
     return this.mapToDomain(order);
   }
 
   async findByCustomer(customerId: string): Promise<Order[]> {
-    const orders = await this.prisma.order.findMany({ where: { customerId } });
-    return orders.map(o => this.mapToDomain(o));
+    const db = this.prisma as unknown as { order: any };
+    const orders = await db.order.findMany({ where: { customerId } });
+    return orders.map((o: any) => this.mapToDomain(o));
   }
 
   async confirm(input: ConfirmOrderInput): Promise<Order> {
-    const order = await this.prisma.order.update({
+    const db = this.prisma as unknown as { order: any };
+    const order = await db.order.update({
       where: { id: input.orderId },
       data: { status: 'CONFIRMED' },
     });
@@ -48,11 +52,13 @@ export class PrismaOrderRepository implements OrderPersistencePort {
   }
 
   async cancel(id: string): Promise<void> {
-    await this.prisma.order.update({ where: { id }, data: { status: 'CANCELLED' } });
+    const db = this.prisma as unknown as { order: any };
+    await db.order.update({ where: { id }, data: { status: 'CANCELLED' } });
   }
 
   async updateStatus(id: string, status: Order['status']): Promise<void> {
-    await this.prisma.order.update({ where: { id }, data: { status } });
+    const db = this.prisma as unknown as { order: any };
+    await db.order.update({ where: { id }, data: { status } });
   }
 
   private mapToDomain(o: any): Order {

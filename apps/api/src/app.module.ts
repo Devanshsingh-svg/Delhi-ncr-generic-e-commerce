@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
 import { PrescriptionModule } from './modules/prescription/prescription.module';
 import { OrderModule } from './modules/order/order.module';
+import { CytotoxicModule } from './modules/cytotoxic/cytotoxic.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -17,6 +18,7 @@ import { PrismaModule } from './prisma/prisma.module';
     HealthModule,
     PrescriptionModule,
     OrderModule,
+    CytotoxicModule,
   ],
 })
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class

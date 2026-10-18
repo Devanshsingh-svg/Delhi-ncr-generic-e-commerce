@@ -1,3 +1,7 @@
+import { reserveStock } from '../inventory/reservation.service';
+import { InventoryReservationPort } from '../ports/inventory-reservation.port';
+import { PrescriptionService } from '../prescription/prescription.service';
+
 import {
   Order,
   CreateOrderInput,
@@ -14,9 +18,6 @@ import {
   PaymentRequiredError,
 } from './order.errors';
 import { OrderPersistencePort } from './order.port';
-import { PrescriptionService } from '../prescription/prescription.service';
-import { reserveStock } from '../inventory/reservation.service';
-import { InventoryReservationPort } from '../ports/inventory-reservation.port';
 
 export interface CheckoutInput {
   customerId: string;

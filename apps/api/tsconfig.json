@@ -7,6 +7,6 @@
     "emitDecoratorMetadata": true,
     "useDefineForClassFields": false
   },
-  "include": ["src/**/*", "test/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
