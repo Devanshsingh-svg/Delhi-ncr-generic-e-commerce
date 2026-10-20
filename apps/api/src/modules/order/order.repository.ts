@@ -1,11 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+
 import {
   OrderPersistencePort,
   CreateOrderInput,
   ConfirmOrderInput,
   Order,
 } from '@gq/domain';
+
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class PrismaOrderRepository implements OrderPersistencePort {

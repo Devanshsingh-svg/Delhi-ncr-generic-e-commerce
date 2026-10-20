@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Body, Controller, Post, Get, Param, BadRequestException, Inject } from '@nestjs/common';
-import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+
 import {
   CreatePrescriptionRequestSchema,
   VerifyPrescriptionRequestSchema,
@@ -7,6 +8,8 @@ import {
   PrescriptionValidationResponseSchema,
 } from '@gq/contracts';
 import { PrescriptionService, PrescriptionPersistencePort } from '@gq/domain';
+
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { PrismaService } from '../../prisma/prisma.service';
 
 @Controller('prescriptions')

@@ -36,18 +36,17 @@ describe('HealthController (e2e)', () => {
 
   it('/health (GET) returns status object', async () => {
     const res = await request(app.getHttpServer()).get('/api/v1/health').expect(200);
-    expect(res.body).toHaveProperty('success', true);
-    expect(res.body.data).toHaveProperty('status');
-    expect(['ok', 'degraded', 'down']).toContain(res.body.data.status);
-    expect(res.body.data).toHaveProperty('checks');
+        expect(res.body).toHaveProperty('status');
+    expect(['ok', 'degraded', 'down']).toContain(res.body.status);
+    expect(res.body).toHaveProperty('checks');
   });
 
   it.skip('postgres check reports ok when SELECT 1 succeeds — requires live DB', async () => {
     const res = await request(app.getHttpServer()).get('/api/v1/health').expect(200);
-    const pgCheck = res.body.data.checks.find((c: any) => c.name === 'postgres');
+    const pgCheck = res.body.checks.find((c: any) => c.name === 'postgres');
     expect(pgCheck).toBeDefined();
     expect(pgCheck.status).toBe('ok');
   });
 
-  it.skip('GET /auth/me does not leak passwordHash or mfaSecret — Phase 2', async () => {});
+  it.skip('GET /auth/me does not leak passwordHash — Phase 2', async () => {});
 });

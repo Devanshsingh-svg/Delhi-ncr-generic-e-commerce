@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+
 import {
   CytotoxicPersistencePort,
   CreateCytotoxicDrugInput,
 } from '@gq/domain';
+
+import { PrismaService } from '../../prisma/prisma.service';
 
 @Injectable()
 export class PrismaCytotoxicRepository implements CytotoxicPersistencePort {

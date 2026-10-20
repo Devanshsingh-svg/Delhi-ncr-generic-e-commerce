@@ -82,8 +82,8 @@ export class PrismaUserRepository extends UserRepository {
         userId,
         token,
         expiresAt,
-        userAgent,
-        ipAddress,
+        userAgent: userAgent ?? null,
+        ipAddress: ipAddress ?? null,
         revoked: false,
       },
     });
@@ -145,8 +145,8 @@ export class PrismaUserRepository extends UserRepository {
       token: stored.token,
       expiresAt: stored.expiresAt,
       revoked: stored.revoked,
-      userAgent: stored.userAgent,
-      ipAddress: stored.ipAddress,
+      userAgent: stored.userAgent ?? null,
+      ipAddress: stored.ipAddress ?? null,
       createdAt: stored.createdAt,
     };
   }

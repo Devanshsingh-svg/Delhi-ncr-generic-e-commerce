@@ -12,8 +12,6 @@ import {
   OrderNotFoundError,
   OrderAlreadyConfirmedError,
   OrderAlreadyCancelledError,
-  InsufficientStockForOrderError,
-  PrescriptionRequiredError,
   PrescriptionInvalidForOrderError,
   PaymentRequiredError,
 } from './order.errors';

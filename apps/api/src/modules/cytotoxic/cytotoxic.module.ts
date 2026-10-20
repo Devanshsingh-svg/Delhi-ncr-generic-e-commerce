@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+
 import { PrismaModule } from '../../prisma/prisma.module';
+
 import { CytotoxicController } from './cytotoxic.controller';
 import { PrismaCytotoxicRepository } from './cytotoxic.repository';
 
@@ -13,4 +15,5 @@ import { PrismaCytotoxicRepository } from './cytotoxic.repository';
     },
   ],
 })
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class CytotoxicModule {}

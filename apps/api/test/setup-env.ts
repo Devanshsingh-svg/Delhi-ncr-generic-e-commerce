@@ -1,6 +1,13 @@
-// Test environment setup — runs before all tests
 process.env['NODE_ENV'] = 'test';
 process.env['DATABASE_URL'] = 'postgresql://postgres:postgres@localhost:5432/genericquick';
 process.env['JWT_SECRET'] = 'test-secret-min-32-chars-long-!!';
 process.env['SESSION_SECRET'] = 'test-session-secret-min-32-chars-!!';
 process.env['PORT'] = '0';
+process.env['REDIS_URL'] = 'redis://localhost:6379';
+process.env['MEILISEARCH_URL'] = 'http://localhost:7700';
+process.env['MEILISEARCH_API_KEY'] = 'dev-master-key';
+process.env['S3_ENDPOINT'] = 'http://localhost:9000';
+process.env['S3_ACCESS_KEY'] = 'minioadmin';
+process.env['S3_SECRET_KEY'] = 'minioadmin';
+process.env['S3_BUCKET_PRESCRIPTIONS'] = 'gq-prescriptions';
+process.env['S3_BUCKET_CERTIFICATES'] = 'gq-certificates';

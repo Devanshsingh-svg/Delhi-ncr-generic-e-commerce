@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+
 import { PrismaModule } from '../../prisma/prisma.module';
+
 import { PrescriptionController } from './prescription.controller';
 import { PrismaPrescriptionRepository } from './prescription.repository';
 
@@ -13,4 +15,5 @@ import { PrismaPrescriptionRepository } from './prescription.repository';
     },
   ],
 })
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class PrescriptionModule {}

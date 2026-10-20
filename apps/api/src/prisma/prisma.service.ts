@@ -21,8 +21,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
     if (process.env['NODE_ENV'] === 'production') throw new Error('cleanDatabase forbidden in production');
     const models = Reflect.ownKeys(this).filter(k => typeof k === 'string' && !k.startsWith('_') && !k.startsWith('$'));
     for (const model of models) {
-      if (typeof this[model as string]?.deleteMany === 'function') {
-        await this[model as string].deleteMany();
+      if (typeof (this as unknown as Record<string, any>)[model as string]?.deleteMany === 'function') {
+        await (this as unknown as Record<string, any>)[model as string].deleteMany();
       }
     }
   }

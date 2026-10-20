@@ -1,13 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Body, Controller, Post, Get, Param, BadRequestException, Inject } from '@nestjs/common';
-import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+
 import {
   CreateCytotoxicDrugRequestSchema,
   UpdateCytotoxicHandlingRequestSchema,
   CytotoxicDrugResponseSchema,
   CytotoxicHandlingValidationResponseSchema,
 } from '@gq/contracts';
-import { CytotoxicHandlingService } from '@gq/domain';
-import { CytotoxicPersistencePort } from '@gq/domain';@Controller('cytotoxic')
+import { CytotoxicHandlingService , CytotoxicPersistencePort } from '@gq/domain';
+
+import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
+@Controller('cytotoxic')
 export class CytotoxicController {
   private readonly service: CytotoxicHandlingService;
 
