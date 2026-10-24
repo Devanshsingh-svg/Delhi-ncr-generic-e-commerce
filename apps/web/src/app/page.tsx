@@ -2,7 +2,8 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Search, X, Filter } from 'lucide-react';
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { CategoryGrid } from '@/components/CategoryGrid';
 import { FilterPanel } from '@/components/FilterPanel';
@@ -15,7 +16,9 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { apiClient } from '../lib/api';
 import { CatalogItem, DEMO_DARK_STORE_NAME, unwrap } from '../lib/demo';
 
-export default function HomePage() {
+function HomePageContent() {
+  const searchParams = useSearchParams();
+  const formParam = searchParams.get('form') ?? '';
   const [searchInput, setSearchInput] = useState('');
   const search = useDebounce(searchInput, 250);
   const [filters, setFilters] = useState<Omit<CatalogFilters, 'search'>>({
@@ -23,6 +26,10 @@ export default function HomePage() {
     dosageForm: '',
   });
   const [filterPanelOpen, setFilterPanelOpen] = useState(false);
+
+  useEffect(() => {
+    setFilters((prev) => (formParam && prev.dosageForm !== formParam ? { ...prev, dosageForm: formParam } : prev));
+  }, [formParam]);
 
   const { data: items, isLoading, error } = useQuery({
     queryKey: ['catalog'],
@@ -189,5 +196,13 @@ export default function HomePage() {
 
       <TrustSection />
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense fallback={null}>
+      <HomePageContent />
+    </Suspense>
   );
 }

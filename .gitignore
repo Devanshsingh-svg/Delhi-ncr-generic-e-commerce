@@ -21,3 +21,6 @@ coverage/
 # Agent tooling session state
 .omo/
 .senpi/
+
+# ZCode session state
+.zcode/
