@@ -11,6 +11,12 @@ export const CatalogItemResponseSchema = z.object({
   regulatoryCode: z.string().min(1),
   regulatoryLabel: z.string().min(1),
   availableQty: z.number().int().nonnegative(),
+  isTopSeller: z.boolean(),
+  mrp: z.number().nullable(),
+  altBrandName: z.string().nullable(),
+  altMrp: z.number().nullable(),
+  altEstimated: z.boolean(),
+  savingsPct: z.number().nullable(),
 });
 export type CatalogItemResponse = z.infer<typeof CatalogItemResponseSchema>;
 

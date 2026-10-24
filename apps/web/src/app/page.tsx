@@ -2,7 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { Search, X, Filter } from 'lucide-react';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import { CategoryGrid } from '@/components/CategoryGrid';
@@ -36,7 +36,13 @@ function HomePageContent() {
     queryFn: async () => unwrap<CatalogItem[]>(await apiClient.get('/catalog/items')),
   });
 
-  const filteredItems = useCatalogFilters(items, { ...filters, search });
+  const searching = search.trim().length > 0;
+  // Default view: top sellers only. Searching looks across the full catalog.
+  const baseItems = useMemo(
+    () => (items && !searching ? items.filter((item) => item.isTopSeller) : items),
+    [items, searching],
+  );
+  const filteredItems = useCatalogFilters(baseItems, { ...filters, search });
 
   const hasActiveFilters = filters.regulatory !== 'all' || filters.dosageForm !== '';
   const filterCount = (filters.regulatory !== 'all' ? 1 : 0) + (filters.dosageForm !== '' ? 1 : 0);
@@ -136,14 +142,19 @@ function HomePageContent() {
       <section className="mt-8" aria-labelledby="catalog-heading">
         <div className="flex items-center justify-between mb-4">
           <h2 id="catalog-heading" className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
-            Available medicines
+            {searching ? 'Search results' : 'Top sellers'}
           </h2>
           {(hasActiveFilters || search) && (
             <span className="text-sm text-neutral-500 dark:text-neutral-400">
-              {filteredItems.length} of {items?.length ?? 0} results
+              {filteredItems.length} of {baseItems?.length ?? 0} results
             </span>
           )}
         </div>
+        {!searching && !isLoading && !error && (
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 -mt-2 mb-4">
+            Showing the most-demanded medicines in Delhi NCR. Use search to find all {items?.length ?? 0} medicines.
+          </p>
+        )}
 
         {isLoading ? (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

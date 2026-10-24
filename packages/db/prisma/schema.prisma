@@ -65,6 +65,12 @@ model Formulation {
   dosageForm    String
   strength      String
   route         String
+  isTopSeller   Boolean  @default(false)
+  mrp           Decimal? @db.Decimal(10, 2)
+  unitPrice     Decimal? @db.Decimal(10, 4)
+  altBrandName  String?
+  altMrp        Decimal? @db.Decimal(10, 2)
+  altEstimated  Boolean  @default(false)
   createdAt     DateTime @default(now()) @db.Timestamptz(6)
   updatedAt     DateTime @updatedAt @db.Timestamptz(6)
 

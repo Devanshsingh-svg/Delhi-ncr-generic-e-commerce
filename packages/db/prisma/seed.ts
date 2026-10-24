@@ -33,14 +33,82 @@ interface SourceRow {
   Retail_Status?: string | null;
   Therapeutic_Class?: string | null;
   Prescription_Schedule?: string | null;
+  Delhi_Surge_Profile?: string | null;
   Cheapest_Source?: string | null;
+  Cheapest_Unit_Price?: number | null;
   pmbi_product_name?: string | null;
+  pmbi_mrp?: number | null;
+  pmbi_unit_price?: number | null;
   zeelab_brand_name?: string | null;
   zeelab_composition?: string | null;
+  zeelab_mrp?: number | null;
+  zeelab_unit_price?: number | null;
   tata1mg_brand_name?: string | null;
   tata1mg_composition?: string | null;
+  tata1mg_mrp?: number | null;
+  tata1mg_unit_price?: number | null;
   [key: string]: unknown;
 }
+
+/** Demand-flagged surge profiles count as top sellers; General_Acute is the routine catalog. */
+const TOP_SELLER_PROFILES = new Set([
+  'Chronic_Refill (Year-Round)',
+  'Monsoon_Vector (Jul-Oct)',
+  'Smog_Surge (Oct-Feb)',
+]);
+
+/**
+ * Well-known branded ("English") equivalents by molecule INN, used when the
+ * dataset carries no second source. Prices for these are estimates at the
+ * Jan Aushadhi benchmark (~3x generic MRP) and are flagged altEstimated.
+ */
+const FAMOUS_BRANDS: Record<string, string> = {
+  paracetamol: 'Dolo 650',
+  ibuprofen: 'Brufen',
+  'ibuprofen paracetamol': 'Ibugesic Plus',
+  aspirin: 'Disprin',
+  cetirizine: 'Cetzine',
+  levocetirizine: 'Levocet',
+  azithromycin: 'Azithral',
+  amoxicillin: 'Mox 500',
+  'amoxycillin clavulanic acid': 'Augmentin',
+  'amoxicillin clavulanic acid': 'Augmentin',
+  pantoprazole: 'Pantocid',
+  omeprazole: 'Omez',
+  esomeprazole: 'Nexum',
+  rabeprazole: 'Razo',
+  ranitidine: 'Aciloc',
+  metformin: 'Glycomet',
+  glimepiride: 'Amaryl',
+  sitagliptin: 'Januvia',
+  vildagliptin: 'Galvus',
+  amlodipine: 'Amlopres',
+  telmisartan: 'Telma',
+  losartan: 'Losar',
+  atenolol: 'Tenormin',
+  metoprolol: 'Metolar',
+  rosuvastatin: 'Rosuvas',
+  atorvastatin: 'Atorva',
+  levothyroxine: 'Thyronorm',
+  salbutamol: 'Asthalin',
+  montelukast: 'Montair',
+  chlorpheniramine: 'Avil',
+  diclofenac: 'Voveran',
+  tramadol: 'Ultracet',
+  domperidone: 'Domstal',
+  ondansetron: 'Emeset',
+  clopidogrel: 'Clopilet',
+  ors: 'Electral',
+  'oral rehydration salt': 'Electral',
+  mefenamic: 'Meftal',
+  dicyclomine: 'Cyclopam',
+  'vitamin c': 'Limcee',
+  folicacid: 'Folvite',
+  'folic acid': 'Folvite',
+};
+
+/** Estimated branded-equivalent markup vs Jan Aushadhi generic MRP. */
+const BRAND_ESTIMATE_FACTOR = 3;
 
 interface ParsedIngredient {
   inn: string;
@@ -220,6 +288,80 @@ function manufacturerFor(source: string | null | undefined): { name: string } {
   return { name: s };
 }
 
+interface PricePair {
+  mrp: number | null;
+  unitPrice: number | null;
+}
+
+interface SourcePrices {
+  source: 'pmbi' | 'zeelab' | 'tata1mg';
+  productName: string | null;
+  mrp: number | null;
+  unitPrice: number | null;
+}
+
+function sourcePrices(row: SourceRow, source: 'pmbi' | 'zeelab' | 'tata1mg'): SourcePrices {
+  const productName =
+    source === 'pmbi'
+      ? (row.pmbi_product_name ?? null)
+      : source === 'zeelab'
+        ? (row.zeelab_brand_name ?? null)
+        : (row.tata1mg_brand_name ?? null);
+  return {
+    source,
+    productName,
+    mrp: (row[`${source}_mrp`] as number | null | undefined) ?? null,
+    unitPrice: (row[`${source}_unit_price`] as number | null | undefined) ?? null,
+  };
+}
+
+function pickPrimaryPrice(row: SourceRow): PricePair {
+  const cheapest = (row.Cheapest_Source ?? '').trim();
+  const order: Array<'pmbi' | 'zeelab' | 'tata1mg'> = [];
+  if (/zeelab/i.test(cheapest)) order.push('zeelab');
+  else if (/tata/i.test(cheapest)) order.push('tata1mg');
+  else if (/pmbi|jan aushadhi/i.test(cheapest) || !cheapest) order.push('pmbi');
+  for (const s of order) {
+    const p = sourcePrices(row, s);
+    if (p.mrp !== null || p.unitPrice !== null) return { mrp: p.mrp, unitPrice: p.unitPrice };
+  }
+  for (const s of ['pmbi', 'zeelab', 'tata1mg'] as const) {
+    const p = sourcePrices(row, s);
+    if (p.mrp !== null || p.unitPrice !== null) return { mrp: p.mrp, unitPrice: p.unitPrice };
+  }
+  return { mrp: null, unitPrice: null };
+}
+
+/** The branded "English" alternative: a real second source when present, else a curated brand name with an estimated MRP. */
+function pickAlternative(
+  row: SourceRow,
+  primaryMrp: number | null,
+  ingredients: ParsedIngredient[],
+): { altBrandName: string | null; altMrp: number | null; altEstimated: boolean } {
+  const primarySource = (row.Cheapest_Source ?? '').trim();
+  const isPrimary = (s: 'pmbi' | 'zeelab' | 'tata1mg') =>
+    s === 'pmbi' ? /pmbi|jan aushadhi|^$/i.test(primarySource) : new RegExp(s, 'i').test(primarySource);
+
+  const candidates = (['zeelab', 'tata1mg', 'pmbi'] as const)
+    .filter((s) => !isPrimary(s))
+    .map((s) => sourcePrices(row, s))
+    .filter((p) => p.productName && p.mrp !== null)
+    .sort((a, b) => (b.unitPrice ?? b.mrp ?? 0) - (a.unitPrice ?? a.mrp ?? 0));
+
+  if (candidates.length > 0) {
+    const alt = candidates[0];
+    return { altBrandName: alt.productName, altMrp: alt.mrp, altEstimated: false };
+  }
+
+  const innKey = (ingredients[0]?.inn ?? '').toLowerCase().replace(/\s+/g, ' ').trim();
+  const famous = FAMOUS_BRANDS[innKey] ?? FAMOUS_BRANDS[innKey.replace(/\s+/g, '')];
+  if (primaryMrp !== null && primaryMrp > 0) {
+    const est = Math.round(primaryMrp * BRAND_ESTIMATE_FACTOR * 100) / 100;
+    return { altBrandName: famous ?? null, altMrp: est, altEstimated: true };
+  }
+  return { altBrandName: famous ?? null, altMrp: null, altEstimated: true };
+}
+
 function scheduleFor(raw: string | null | undefined): { code: string; label: string } {
   const s = (raw ?? '').trim();
   if (/cytotoxic/i.test(s)) return { code: 'H-CYTO', label: 'Schedule H — Cytotoxic (hospital handling)' };
@@ -324,6 +466,10 @@ async function main(): Promise<void> {
     const schedule = scheduleFor(row.Prescription_Schedule);
     const manufacturer = manufacturerFor(row.Cheapest_Source);
     const fingerprint = fingerprintFor(form, route, releaseType, ingredients);
+    const primaryPrice = pickPrimaryPrice(row);
+    const alternative = pickAlternative(row, primaryPrice.mrp, ingredients);
+    const surgeProfile = (row.Delhi_Surge_Profile ?? '') as string;
+    const isTopSeller = TOP_SELLER_PROFILES.has(surgeProfile);
 
     const moleculeInn = normalizeInn(ingredients[0].inn) || 'Unspecified';
     const molecule = await prisma.molecule.upsert({
@@ -355,6 +501,12 @@ async function main(): Promise<void> {
         strength,
         route,
         moleculeId: molecule.id,
+        isTopSeller,
+        mrp: primaryPrice.mrp,
+        unitPrice: primaryPrice.unitPrice,
+        altBrandName: alternative.altBrandName,
+        altMrp: alternative.altMrp,
+        altEstimated: alternative.altEstimated,
       },
     });
 

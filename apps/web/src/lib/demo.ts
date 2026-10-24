@@ -15,6 +15,12 @@ export interface CatalogItem {
   regulatoryCode: string;
   regulatoryLabel: string;
   availableQty: number;
+  isTopSeller: boolean;
+  mrp: number | null;
+  altBrandName: string | null;
+  altMrp: number | null;
+  altEstimated: boolean;
+  savingsPct: number | null;
 }
 
 export interface CartItemView {

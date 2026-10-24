@@ -28,6 +28,12 @@ export class CatalogController {
     for (const f of formulations) {
       const brand = f.brandMedicines?.[0];
       if (!brand) continue;
+      const mrp = f.mrp !== null && f.mrp !== undefined ? Number(f.mrp) : null;
+      const altMrp = f.altMrp !== null && f.altMrp !== undefined ? Number(f.altMrp) : null;
+      const savingsPct =
+        mrp !== null && altMrp !== null && altMrp > 0 && altMrp > mrp
+          ? Math.round((1 - mrp / altMrp) * 100)
+          : null;
       items.push({
         formulationId: f.id,
         brandName: brand.brandName,
@@ -42,6 +48,12 @@ export class CatalogController {
           (sum, b) => sum + b.availableQty,
           0,
         ),
+        isTopSeller: f.isTopSeller,
+        mrp,
+        altBrandName: f.altBrandName ?? null,
+        altMrp,
+        altEstimated: f.altEstimated,
+        savingsPct,
       });
     }
 

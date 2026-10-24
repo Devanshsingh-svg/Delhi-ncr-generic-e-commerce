@@ -59,6 +59,28 @@ export function ProductCard({ item, isAdding, onAdd }: ProductCardProps) {
         </p>
         <p className="text-sm italic text-neutral-500 dark:text-neutral-400 line-clamp-1">{item.moleculeInn}</p>
         <p className="text-xs text-neutral-400 dark:text-neutral-500">by {item.manufacturerName}</p>
+        {item.mrp !== null && (
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg font-bold text-neutral-900 dark:text-neutral-50">
+              ₹{item.mrp.toFixed(2)}
+            </span>
+            {item.savingsPct !== null && item.savingsPct > 0 && item.altMrp !== null && (
+              <span className="text-sm text-neutral-400 dark:text-neutral-500 line-through">
+                ₹{item.altMrp.toFixed(2)}
+              </span>
+            )}
+          </div>
+        )}
+        {item.savingsPct !== null && item.savingsPct > 0 && (
+          <div className="rounded-lg bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 px-2.5 py-1.5 text-xs">
+            <span className="font-semibold text-primary-700 dark:text-primary-300">Save {item.savingsPct}%</span>
+            <span className="text-neutral-600 dark:text-neutral-400">
+              {' '}vs {item.altBrandName ?? 'branded medicine'}
+              {item.altEstimated ? ' (est.)' : ''}
+              {item.altMrp !== null ? ` · MRP ₹${item.altMrp.toFixed(2)}` : ''}
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="mt-3 flex items-center justify-between">
