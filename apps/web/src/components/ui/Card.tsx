@@ -9,9 +9,9 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variantStyles = {
-  default: 'bg-white',
-  bordered: 'bg-white border border-neutral-200',
-  elevated: 'bg-white shadow-lg',
+  default: 'bg-white dark:bg-neutral-900',
+  bordered: 'bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700',
+  elevated: 'bg-white dark:bg-neutral-900 shadow-lg',
 };
 
 const paddingStyles = {
