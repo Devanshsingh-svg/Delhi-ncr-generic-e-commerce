@@ -1,5 +1,7 @@
 import { Prescription, CreatePrescriptionInput, VerifyPrescriptionInput } from './prescription.entity';
 
+export const PRESCRIPTION_REPOSITORY_TOKEN = Symbol('PRESCRIPTION_REPOSITORY');
+
 export abstract class PrescriptionPersistencePort {
   abstract create(input: CreatePrescriptionInput): Promise<Prescription>;
   abstract findById(id: string): Promise<Prescription | null>;

@@ -7,7 +7,7 @@ import {
   CytotoxicDrugResponseSchema,
   CytotoxicHandlingValidationResponseSchema,
 } from '@gq/contracts';
-import { CytotoxicHandlingService , CytotoxicPersistencePort } from '@gq/domain';
+import { CytotoxicHandlingService, CytotoxicPersistencePort, CYTOTOXIC_REPOSITORY_TOKEN } from '@gq/domain';
 
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 @Controller('cytotoxic')
@@ -15,7 +15,7 @@ export class CytotoxicController {
   private readonly service: CytotoxicHandlingService;
 
   constructor(
-    @Inject('CytotoxicRepository') private readonly repo: CytotoxicPersistencePort,
+    @Inject(CYTOTOXIC_REPOSITORY_TOKEN) private readonly repo: CytotoxicPersistencePort,
   ) {
     this.service = new CytotoxicHandlingService(repo);
   }

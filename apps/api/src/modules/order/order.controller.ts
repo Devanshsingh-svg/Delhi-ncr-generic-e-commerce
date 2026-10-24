@@ -8,7 +8,16 @@ import {
   OrderResponseSchema,
   CheckoutResponseSchema,
 } from '@gq/contracts';
-import { OrderService , OrderPersistencePort } from '@gq/domain';
+import {
+  OrderService,
+  OrderPersistencePort,
+  ORDER_REPOSITORY_TOKEN,
+  PrescriptionService,
+  PRESCRIPTION_REPOSITORY_TOKEN,
+  PrescriptionPersistencePort,
+  InventoryReservationPort,
+  INVENTORY_RESERVATION_PORT_TOKEN,
+} from '@gq/domain';
 
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 
@@ -17,9 +26,12 @@ export class OrderController {
   private readonly service: OrderService;
 
   constructor(
-    @Inject('OrderRepository') private readonly repo: OrderPersistencePort,
+    @Inject(ORDER_REPOSITORY_TOKEN) private readonly orderRepo: OrderPersistencePort,
+    @Inject(PRESCRIPTION_REPOSITORY_TOKEN) private readonly prescriptionRepo: PrescriptionPersistencePort,
+    @Inject(INVENTORY_RESERVATION_PORT_TOKEN) private readonly inventoryPort: InventoryReservationPort,
   ) {
-    this.service = new OrderService(repo, null as any, null as any);
+    const prescriptionService = new PrescriptionService(prescriptionRepo);
+    this.service = new OrderService(orderRepo, prescriptionService, inventoryPort);
   }
 
   @Post()

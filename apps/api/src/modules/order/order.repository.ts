@@ -26,7 +26,6 @@ export class PrismaOrderRepository implements OrderPersistencePort {
         orderNumber: `ORD-${Date.now()}`,
         status: 'PENDING',
         totalAmount: '0.00',
-        prescriptionId: input.prescriptionId ?? null,
       },
     });
     return this.mapToDomain(order);
@@ -70,11 +69,11 @@ export class PrismaOrderRepository implements OrderPersistencePort {
       customerId: o.customerId,
       orderNumber: o.orderNumber,
       status: o.status,
-      totalAmount: o.totalAmount,
+      totalAmount: String(o.totalAmount),
       items: [],
-      prescriptionId: o.prescriptionId,
-      paymentId: o.paymentId,
-      shipmentId: o.shipmentId,
+      prescriptionId: o.prescriptionId ?? null,
+      paymentId: o.paymentId ?? null,
+      shipmentId: o.shipmentId ?? null,
       createdAt: o.createdAt,
       updatedAt: o.updatedAt,
     };

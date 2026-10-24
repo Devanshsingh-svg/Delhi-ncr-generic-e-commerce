@@ -1,7 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus } from '@nestjs/common';
-// eslint-disable-next-line import/no-unresolved -- express types from @nestjs/platform-express
 import { Request, Response } from 'express';
 
 import { AuthPersistenceNotConfiguredError } from '@gq/domain';

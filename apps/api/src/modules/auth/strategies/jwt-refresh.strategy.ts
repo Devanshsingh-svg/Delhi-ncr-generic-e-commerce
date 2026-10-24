@@ -1,6 +1,5 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-// eslint-disable-next-line import/no-unresolved -- express types from @nestjs/platform-express
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 

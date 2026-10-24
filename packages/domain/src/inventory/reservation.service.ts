@@ -59,6 +59,7 @@ export async function reserveStock(
       await port.createStockReservations(allocations.map(a => ({
         orderId: params.orderId,
         inventoryBatchId: a.batchId,
+        formulationId: params.formulationId,
         quantity: a.quantity,
         status: 'ACTIVE' as const,
         reservedAt: now,

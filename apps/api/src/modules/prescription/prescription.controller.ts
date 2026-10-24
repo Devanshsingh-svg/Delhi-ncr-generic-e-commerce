@@ -7,7 +7,7 @@ import {
   PrescriptionResponseSchema,
   PrescriptionValidationResponseSchema,
 } from '@gq/contracts';
-import { PrescriptionService, PrescriptionPersistencePort } from '@gq/domain';
+import { PrescriptionService, PrescriptionPersistencePort, PRESCRIPTION_REPOSITORY_TOKEN } from '@gq/domain';
 
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -18,7 +18,7 @@ export class PrescriptionController {
 
   constructor(
     private readonly prisma: PrismaService,
-    @Inject('PrescriptionRepository') private readonly repo: PrescriptionPersistencePort,
+    @Inject(PRESCRIPTION_REPOSITORY_TOKEN) private readonly repo: PrescriptionPersistencePort,
   ) {
     this.service = new PrescriptionService(repo);
   }

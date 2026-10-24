@@ -1,5 +1,7 @@
 import { CytotoxicDrug, CytotoxicHandling, CreateCytotoxicDrugInput } from './cytotoxic.entity';
 
+export const CYTOTOXIC_REPOSITORY_TOKEN = Symbol('CYTOTOXIC_REPOSITORY');
+
 export abstract class CytotoxicPersistencePort {
   abstract create(input: CreateCytotoxicDrugInput): Promise<CytotoxicDrug>;
   abstract findById(id: string): Promise<CytotoxicDrug | null>;

@@ -37,8 +37,8 @@ export const OrderResponseSchema = z.object({
   prescriptionId: z.string().uuid().nullable(),
   paymentId: z.string().uuid().nullable(),
   shipmentId: z.string().uuid().nullable(),
-  createdAt: z.string().datetime(),
-  updatedAt: z.string().datetime(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
 });
 export type OrderResponse = z.infer<typeof OrderResponseSchema>;
 
@@ -48,7 +48,7 @@ export const CheckoutResponseSchema = z.object({
     z.object({
       batchId: z.string().uuid(),
       quantity: z.number().int().positive(),
-      expiryDate: z.string().datetime(),
+      expiryDate: z.coerce.date(),
     }),
   ),
 });

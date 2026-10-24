@@ -1,4 +1,4 @@
-// eslint.config.js — Flat config for ESLint 9
+// eslint.config.mjs — Flat config for ESLint 9
 // Root-only; all packages inherit via turbo pipeline
 
 import js from '@eslint/js';
@@ -34,6 +34,16 @@ export default tseslint.config(
   // Import plugin for unused imports detection
   importPlugin.flatConfigs.recommended,
   importPlugin.flatConfigs.typescript,
+
+  // Resolve TS path aliases (e.g. @/ in apps/web) for import/no-unresolved;
+  // the resolver uses each file's nearest tsconfig.json by default
+  {
+    settings: {
+      'import/resolver': {
+        typescript: { alwaysTryTypes: true },
+      },
+    },
+  },
 
   // Project-specific rules
   {

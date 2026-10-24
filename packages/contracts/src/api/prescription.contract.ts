@@ -27,11 +27,11 @@ export const PrescriptionResponseSchema = z.object({
   customerId: z.string().uuid(),
   rxNumber: z.string(),
   prescriber: z.string(),
-  issuedAt: z.string().datetime(),
-  expiresAt: z.string().datetime(),
+  issuedAt: z.coerce.date(),
+  expiresAt: z.coerce.date(),
   status: z.enum(['ACTIVE', 'VERIFIED', 'REJECTED', 'EXPIRED']),
   pharmacistId: z.string().uuid().nullable(),
-  reviewedAt: z.string().datetime().nullable(),
+  reviewedAt: z.coerce.date().nullable(),
 });
 export type PrescriptionResponse = z.infer<typeof PrescriptionResponseSchema>;
 

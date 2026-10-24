@@ -11,11 +11,14 @@ export interface InventoryBatchRecord {
 export interface StockReservationCreateInput {
   orderId: string;
   inventoryBatchId: string;
+  formulationId: string;
   quantity: number;
   status: 'ACTIVE';
   reservedAt: Date;
   expiresAt: Date;
 }
+
+export const INVENTORY_RESERVATION_PORT_TOKEN = Symbol('INVENTORY_RESERVATION_PORT');
 
 export abstract class InventoryReservationPort {
   abstract findEligibleBatches(params: {

@@ -1,5 +1,4 @@
 import { Controller, Post, Body, Get, UseGuards, Res, HttpCode, HttpStatus } from '@nestjs/common';
-// eslint-disable-next-line import/no-unresolved -- express types from @nestjs/platform-express
 import { Response } from 'express';
 
 import { getEnv, APP_CONSTANTS } from '@gq/config';
