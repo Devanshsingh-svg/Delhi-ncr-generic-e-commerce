@@ -1,13 +1,14 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Package, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 
 
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { showToast } from '@/components/ui/Toast';
+import { MedicineArt } from '@/components/MedicineArt';
 
 import { apiClient } from '../lib/api';
 import { CatalogItem , DEMO_CUSTOMER_ID, unwrap } from '../lib/demo';
@@ -38,10 +39,8 @@ export function ProductCard({ item, isAdding, onAdd }: ProductCardProps) {
 
   return (
     <Card variant="bordered" padding="md" className="flex flex-col h-full group">
-      <div className="aspect-square w-full rounded-xl bg-neutral-50 dark:bg-neutral-800 mb-3 overflow-hidden relative transition-transform duration-200 group-hover:scale-[1.02]">
-        <div className="flex items-center justify-center h-full p-4">
-          <Package className="h-16 w-16 text-neutral-300 dark:text-neutral-600" aria-hidden="true" />
-        </div>
+      <div className="aspect-square w-full rounded-xl overflow-hidden mb-3 relative transition-transform duration-200 group-hover:scale-[1.02]">
+        <MedicineArt item={item} />
         <Badge variant={item.regulatoryCode === 'H' ? 'prescription' : 'otc'} size="sm" className="absolute top-2 left-2">
           {item.regulatoryCode === 'H' ? 'Rx · Schedule H' : 'OTC'}
         </Badge>
