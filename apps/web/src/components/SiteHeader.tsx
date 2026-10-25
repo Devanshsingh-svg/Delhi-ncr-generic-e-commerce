@@ -26,11 +26,20 @@ export function SiteHeader() {
   const count = totals?.itemCount ?? 0;
 
   return (
-    <header className="sticky top-0 z-20 border-b border-neutral-200 dark:border-neutral-700 bg-white/90 dark:bg-neutral-900/90 backdrop-blur">
+    <header className="sticky top-0 z-20 border-b border-neutral-200 dark:border-neutral-700/80 bg-white/90 dark:bg-delhi-night/90 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-2 text-lg font-bold text-neutral-900 dark:text-neutral-50">
-          <Pill className="h-5 w-5 text-primary-600" aria-hidden="true" />
-          GenericQuick <span className="text-primary-600">NCR</span>
+        <Link href="/" className="flex items-center gap-2.5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-delhi-brick text-white shadow-sm" aria-hidden="true">
+            <Pill className="h-5 w-5" />
+          </span>
+          <span className="leading-tight">
+            <span className="block text-lg font-bold text-neutral-900 dark:text-delhi-paper">
+              GenericQuick <span className="text-delhi-brick">NCR</span>
+            </span>
+            <span className="block text-[11px] font-medium text-delhi-marigold" lang="hi">
+              दिल्ली की अपनी जेनेरिक फार्मेसी
+            </span>
+          </span>
         </Link>
 
         <nav className="hidden md:flex md:items-center md:gap-6">
@@ -63,7 +72,7 @@ export function SiteHeader() {
               aria-label="Delivery location"
               aria-expanded={locationOpen}
             >
-              <MapPin className="h-4 w-4 text-primary-600" aria-hidden="true" />
+              <MapPin className="h-4 w-4 text-delhi-brick" aria-hidden="true" />
               <span>Saket, Delhi</span>
               <ChevronDown className="h-4 w-4" aria-hidden="true" />
             </button>
@@ -83,7 +92,7 @@ export function SiteHeader() {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0, opacity: 0 }}
                     transition={{ type: 'spring', damping: 15, stiffness: 300 }}
-                    className="absolute -right-3.5 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary-600 px-1 text-xs font-bold text-white"
+                    className="absolute -right-3.5 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-delhi-brick px-1 text-xs font-bold text-white"
                     aria-live="polite"
                     aria-atomic="true"
                   >

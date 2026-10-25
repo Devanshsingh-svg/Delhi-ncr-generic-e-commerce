@@ -131,11 +131,17 @@ GitHub repo was created this session and the **full history** pushed. Remote: si
 
 ---
 
-## 8. DELHI AESTHETIC — DECISION PENDING
+## 8. DELHI AESTHETIC — DILLI NIGHTS IMPLEMENTED (2026-10-25)
 
-Interactive mockup with 3 variants (Dilli Nights / Mughal Morning / Chemist Board) saved at:
-`C:\Users\HP\.zcode\v2\visualizations\28d0677a9a746da6272f9bfa037ecab84fdb654d838915bb06a6b6a33f7b1118\delhi-aesthetic-storefront.html`
-(variant 1 has a live accent picker + toran toggle). Proposal: palette swap in `tailwind.config.ts`/`tokens.ts`, Baloo 2 + Mukta fonts with bilingual headlines, toran strip + jali pattern + cusped-arch category tiles, Green-CNG delivery chip, seasonal surge banner driven by `Delhi_Surge_Profile`. **Owner has not yet picked a direction.**
+Owner reviewed a 3-variant mockup (saved at `C:\Users\HP\.zcode\v2\visualizations\28d0677a9a746da6272f9bfa037ecab84fdb654d838915bb06a6b6a33f7b1118\delhi-aesthetic-storefront.html`) and supplied an external implementation plan for the **Dilli Nights** direction, which was reviewed against the real codebase, corrected, and implemented:
+
+- `delhi` palette added to `tailwind.config.ts` + `tokens.ts` (night/surface/elevated/paper/brick/brickHover/marigold/green/muted/indigo) — additive, emerald `primary` retained
+- Fonts: Baloo 2 (display, Devanagari) + Mukta (body, Devanagari) via `next/font/google` in `layout.tsx`; bilingual title + hero line "दवाइयाँ, समझदारी से — 60 मिनट में आपके दरवाज़े"
+- `src/lib/pricing.ts` (NEW): `getPricingComparison` (recomputes savings from the two displayed prices — the on-screen claim can never contradict itself) + `formatINR` (en-IN grouping)
+- `SeasonalSurgeBanner.tsx` (NEW): config-driven smog/monsoon/chronic campaigns picked by month (`surgeTypeForMonth`), Mughal arch + jali motif, no live-AQI claims
+- ProductCard: pricing box with savings amount + % + alternative brand + "(est.)" labels, "Popular" badge, jali lattice, prescription note on Rx items, synthetic stock count hidden ("Available now"), cart mutation/toasts unchanged
+- CategoryGrid: cusped-arch tiles with marigold finial; SiteHeader: terracotta brand mark + Hindi sub-line; page hero: warm charcoal gradient + Green-CNG chip
+- **Prerender fix:** the earlier `useSearchParams`-based `?form=` sync forced a client-side Suspense bailout (static HTML shrank to a 13 KB shell). Replaced with a `window.location.search` read in the mount effect — full ~43 KB prerendered HTML restored. Keep it this way; do not reintroduce page-level `useSearchParams` without a real fallback.
 
 ---
 

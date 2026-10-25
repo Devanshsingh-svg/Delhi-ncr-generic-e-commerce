@@ -20,6 +20,8 @@
 | Dark-mode cards fixed | `src/components/ui/Card.tsx` | Variants now include `dark:bg-neutral-900 dark:border-neutral-700`; before, cards were white with `dark:text-neutral-50` titles (white-on-white). |
 | Slow-FS build fix | `next.config.js` | `staticPageGenerationTimeout: 600` — page-data collection over `/mnt/c` (WSL 9p) exceeded the 60s default and SIGTERMed build workers. **Do not remove while building over `/mnt/c`.** |
 | ESLint config rename | `eslint.config.mjs` (root) | Was `.js` — silences `MODULE_TYPELESS_PACKAGE_JSON`. Flat config, non-type-aware, root-only. |
+| **Dilli Nights theme** | `tailwind.config.ts`, `tokens.ts`, `layout.tsx`, `page.tsx`, `SiteHeader.tsx`, `CategoryGrid.tsx`, `ProductCard.tsx`, `src/lib/pricing.ts` (NEW), `src/components/SeasonalSurgeBanner.tsx` (NEW) | Delhi palette (`delhi.*` tokens, additive over emerald primary), Baloo 2 + Mukta via next/font, bilingual hero + metadata, terracotta CTAs, marigold savings, Mughal arch category tiles, jali textures, config-driven seasonal surge banner (month-based: smog Oct–Feb, monsoon Jul–Oct, chronic else), pricing recomputed client-side (`getPricingComparison`/`formatINR`), synthetic stock hidden, prescription notice on Rx items. See project handoff §8. |
+| Prerender restored | `src/app/page.tsx` | `?form=` sync moved from `useSearchParams`+Suspense (which client-side-bailed the whole page, shrinking static HTML to 13 KB) to a `window.location.search` read in the mount effect — full ~43 KB prerendered HTML. |
 
 ---
 
@@ -64,23 +66,12 @@ altEstimated, savingsPct (nullable)
 
 ---
 
-## 4. DELHI AESTHETIC — PROPOSED, AWAITING DECISION
+## 4. DELHI AESTHETIC — DILLI NIGHTS SHIPPED (2026-10-25)
 
-Interactive mockup with 3 complete variants (owner can flip between them):
-`C:\Users\HP\.zcode\v2\visualizations\28d0677a9a746da6272f9bfa037ecab84fdb654d838915bb06a6b6a33f7b1118\delhi-aesthetic-storefront.html`
-(gitignored location — copy into `docs/design/` if it should live in the repo)
-
-1. **Dilli Nights** — dark, warm near-black; terracotta accent (owner-tunable via picker in the mockup); marigold savings; toran (marigold-garland) strip on hero; jali lattice pattern; skyline line-art (India Gate/Qutub/dome); bilingual headline "दवाइयाँ — 60 मिनट में आपके दरवाज़े".
-2. **Mughal Morning** — warm paper background, deep red + blue-pottery indigo, light theme.
-3. **Chemist Board** — street chemist signboard: white board, thick borders, red/green, hard shadows.
-
-Implementation map when a direction is chosen:
-- `tailwind.config.ts` + `src/styles/tokens.ts` — palette (terracotta/marigold/indigo scales; marigold already semantically matches the Save chips)
-- `src/app/layout.tsx` — `next/font` Baloo 2 (display, Devanagari) + Mukta (body, Devanagari)
-- `page.tsx` — bilingual headline, surge banner (drive from `Delhi_Surge_Profile` via API — needs a small API addition), Green-CNG delivery chip replacing the 🚚 emoji
-- `CategoryGrid.tsx` — cusped-arch tile tops (rounded arch + finial dot)
-- New: `Toran.tsx`, `Jali.tsx` (decorative SVG, aria-hidden)
-- ProductCard/Card — restyle per variant (Chemist Board = thick borders + hard shadows)
+Direction chosen and implemented (see §1 table + project handoff §8). Remaining polish from the proposal, not yet done:
+- Toran (marigold garland) strip variant for the hero top — the jali wash shipped instead
+- Light-theme "Mughal Morning" and "Chemist Board" alternates live only in the mockup
+- Surge banner CTA (`onExplore`) is optional and currently unused — wire it to category/search filters when campaign landing views exist
 
 ---
 

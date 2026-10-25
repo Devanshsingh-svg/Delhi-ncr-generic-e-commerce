@@ -1,6 +1,21 @@
 
 
 export const colors = {
+  // Dilli Nights — Delhi NCR identity palette (mirrors tailwind.config.ts;
+  // keep both in sync). brick = Red Fort terracotta, marigold = genda phool.
+  delhi: {
+    night: '#0F1115',
+    surface: '#16191F',
+    elevated: '#202329',
+    paper: '#FAF7F2',
+    brick: '#C84B31',
+    brickHover: '#B83A24',
+    marigold: '#F59E0B',
+    green: '#059669',
+    muted: '#92949B',
+    indigo: '#2F4470',
+  },
+
   primary: {
     50: '#f0fdf4',
     100: '#dcfce7',
