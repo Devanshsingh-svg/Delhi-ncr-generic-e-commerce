@@ -110,4 +110,4 @@ Kill a running server from a **separate** call: `pkill -f "next-serve[r]"` (neve
 5. **Error/empty states** — catalog error shows "Failed to load catalog" with retry; empty search shows the 🔍 panel. No skeleton for the top-seller hint line.
 6. **`useUniqueDosageForms`** — the FilterPanel dropdown derives from loaded items; with top-sellers default, the dropdown lists fewer forms until a search loads the full catalog. Decide desired behavior.
 7. **No pagination** — API returns everything in one response (~800 KB JSON). Fine for demo; add `?limit/cursor` before production.
-8. Superseded: `HANDOFF-FRONTEND.md` (older, pre-cart/checkout).
+8. Older `HANDOFF-FRONTEND.md` was removed from the working tree on 2026-10-25 (recoverable via `git show 403f10b:HANDOFF-FRONTEND.md`).

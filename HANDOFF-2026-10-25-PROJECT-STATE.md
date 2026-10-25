@@ -3,7 +3,7 @@
 **Project:** Hyperlocal, prescription-aware medicine e-commerce for Delhi NCR
 **Repo:** `C:\Parchee` (WSL path `/mnt/c/parchee`) — pnpm 9 + Turborepo, Node 22 (nvm, WSL), TypeScript 5.9.2
 **GitHub:** `origin` → https://github.com/Devanshsingh-svg/Delhi-ncr-generic-e-commerce.git (branch `master`, fully pushed)
-**Scope of this handoff:** everything that changed on **2026-10-24 → 2026-10-25** (two working sessions). Supersedes HANDOFF-2026-10-22 for machine state; that file's product context (phases, regulatory assumptions A1–A15, formulary seal history) still applies where not repeated here.
+**Scope of this handoff:** everything that changed on **2026-10-24 → 2026-10-25** (two working sessions). Supersedes the earlier handoffs (2026-10-18 `HANDOFF.md`, 2026-10-19, 2026-10-20 planning, 2026-10-22, and the old `HANDOFF-FRONTEND.md`), which were **removed from the working tree on 2026-10-25** — their product context (phases 1–5, regulatory assumptions A1–A15, formulary seal history) remains recoverable from git history, e.g. `git show 403f10b:HANDOFF-2026-10-22-PROJECT-STATE.md`.
 
 ---
 
@@ -148,7 +148,7 @@ Interactive mockup with 3 variants (Dilli Nights / Mughal Morning / Chemist Boar
 5. Real branded MRP ingestion when a source is available (`pickAlternative` in seed.ts consumes it automatically).
 6. Wire Redis/BullMQ worker processors or drop the dependency from env validation.
 7. Regulatory review A1–A15 (unreviewed since the project started; schedule gating for Schedule H/H1/X is now visible in the data).
-8. Hygiene: husky+lint-staged are declared but unwired; `apps/api` has dead `prisma:*` scripts; archive superseded HANDOFF files into `docs/`.
+8. Hygiene: husky+lint-staged are declared but unwired; `apps/api` has dead `prisma:*` scripts.
 
 ---
 
